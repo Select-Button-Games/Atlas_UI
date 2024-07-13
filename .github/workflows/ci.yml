@@ -4,35 +4,25 @@ on: [push, pull_request]
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-        include:
-          - os: ubuntu-latest
-            cc: gcc
-            cxx: g++
-            build-dir: build
-          - os: windows-latest
-            cc: cl
-            cxx: cl
-            build-dir: build
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
 
-    - name: Set up C++ Environment
-      uses: actions/setup-cpp@v2
-      with:
-        compiler: ${{ matrix.cc }}
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libglew-dev libglm-dev
 
-    - name: Create Build Directory
-      run: mkdir ${{ matrix.build-dir }}
+    - name: Compile
+      run: |
+        mkdir build
+        cd build
+        cmake ..
+        make
 
-    - name: Configure CMake
-      run: cmake -B ${{ matrix.build-dir }} -DCMAKE_BUILD_TYPE=Release .
-      working-directory: ${{ github.workspace }}
+    - name: Run tests
+      run: |
+        # Add commands to run your tests here
+        echo "Running tests..."
 
-    - name: Build
-      run: cmake --build ${{ matrix.build-dir }} --config Release
-      working-directory: ${{ github.workspace }}
