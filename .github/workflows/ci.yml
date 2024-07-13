@@ -1,0 +1,38 @@
+name: C++ CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            cc: gcc
+            cxx: g++
+            build-dir: build
+          - os: windows-latest
+            cc: cl
+            cxx: cl
+            build-dir: build
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up C++ Environment
+      uses: actions/setup-cpp@v2
+      with:
+        compiler: ${{ matrix.cc }}
+
+    - name: Create Build Directory
+      run: mkdir ${{ matrix.build-dir }}
+
+    - name: Configure CMake
+      run: cmake -B ${{ matrix.build-dir }} -DCMAKE_BUILD_TYPE=Release .
+      working-directory: ${{ github.workspace }}
+
+    - name: Build
+      run: cmake --build ${{ matrix.build-dir }} --config Release
+      working-directory: ${{ github.workspace }}
