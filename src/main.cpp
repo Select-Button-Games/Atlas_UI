@@ -1,7 +1,7 @@
 #include <iostream>
 #define SETUP_SDL_OPENGL
-#include "sv_ui3.0.h"
-#include "sv_ui_utilities.h"
+#include "atlas_ui3.0.h"
+#include "atlas_ui_utilities.h"
 
 GLuint loadTexture(const char* path) {
     SDL_Surface* surface = IMG_Load(path); // Use IMG_Load instead of SDL_LoadBMP
@@ -44,11 +44,11 @@ GLuint loadTexture(const char* path) {
 }
 
 int main(int argc, char* argv[]) {
-    SV_UI::Setup("SV_UI Example", SV_UI::SCREEN_WIDTH, SV_UI::SCREEN_HEIGHT);
+    Atlas::Setup("Atlas UI Example", Atlas::SCREEN_WIDTH, Atlas::SCREEN_HEIGHT);
     // Initialize the UI library
-    SV_UI::initOpenGL();
-    SV_UI::setProjectionMatrix(SV_UI::SCREEN_WIDTH, SV_UI::SCREEN_HEIGHT);
-    SV_UI::initOpenGLDebug();
+    Atlas::initOpenGL();
+    Atlas::setProjectionMatrix(Atlas::SCREEN_WIDTH, Atlas::SCREEN_HEIGHT);
+    Atlas::initOpenGLDebug();
     // Load texture
     GLuint texture = loadTexture("metalPanel_green.png");
     if (!texture) {
@@ -61,7 +61,7 @@ int main(int argc, char* argv[]) {
         };
 
     // Create some widgets
-    SV_UI::createWidget(1, 0, 0, 400, 400, SV_UI::WidgetOptions::WIDGET_DRAGGABLE, "metalPanel_green.png");
+    Atlas::createWidget(1, 0, 0, 400, 400, Atlas::WidgetOptions::WIDGET_DRAGGABLE, "metalPanel_green.png");
 
     auto checkBox = [](bool isChecked) {
         if (isChecked) {
@@ -71,15 +71,15 @@ int main(int argc, char* argv[]) {
             std::cout << "CheckBox is not checked." << std::endl;
         }
         };
-    SV_UI::CheckBox(10, 10, false, checkBox, "Click me");
-    SV_UI::Text("CheckBox", 1.0f);
+    Atlas::CheckBox(10, 10, false, checkBox, "Click me");
+    Atlas::Text("CheckBox", 1.0f);
 
     auto progressBar = [](float progress) {
         std::cout << "Progress: " << progress << std::endl;
         };
-    SV_UI::ProgressBar(20, 20, true, progressBar, 80, 30);
+    Atlas::ProgressBar(20, 20, true, progressBar, 80, 30);
 
-    SV_UI::endWidget();
+    Atlas::endWidget();
 
     bool quit = false;
     SDL_Event event;
@@ -89,18 +89,18 @@ int main(int argc, char* argv[]) {
             if (event.type == SDL_QUIT) {
                 quit = true;
             }
-            SV_UI::handleEvents(&event);
+            Atlas::handleEvents(&event);
         }
 
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        SV_UI::renderUI();
+        Atlas::renderUI();
 
-        SDL_GL_SwapWindow(SV_UI::g_window);
+        SDL_GL_SwapWindow(Atlas::g_window);
     }
 
-    SV_UI::Shutdown();
+    Atlas::Shutdown();
     return 0;
 }
 
