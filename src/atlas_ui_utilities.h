@@ -152,14 +152,27 @@ namespace Atlas {
 
 
 
-
     //////////////////////////////////////////////////
     ////////////OPENGL DEBUG STUFF////////////////////
     ///////////////////////////////////////////////////
+    void checkOpenGLError(const char* stmt, const char* fname, int line) {
+        GLenum err = glGetError();
+        while (err != GL_NO_ERROR) {
+            std::cerr << "OpenGL error " << err << " at " << fname << ":" << line << " - for " << stmt << std::endl;
+            err = glGetError(); // To catch multiple errors
+        }
+    }
 
+    // Macro to wrap OpenGL calls
+#define GL_CHECK(stmt) do { \
+        stmt; \
+        GLenum err = glGetError(); \
+        if (err != GL_NO_ERROR) { \
+            std::cerr << "OpenGL error " << err << " at " << __FILE__ << ":" << __LINE__ << " - for " << #stmt << std::endl; \
+        } \
+    } while (0)
     // Callback function for debugging
     void APIENTRY glDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {
-
         // Ignore non-significant error/warning codes
         if (id == 131169 || id == 131185 || id == 131218 || id == 131204) return;
 
@@ -195,6 +208,7 @@ namespace Atlas {
         } std::cerr << std::endl;
         std::cerr << std::endl;
     }
+
 
     // Function to initialize OpenGL debugging
     void initOpenGLDebug() {
@@ -253,4 +267,63 @@ namespace Atlas {
             break;
         }
     }
+
+
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////LOGGING MECHANISM/////////////////////////////////////////////////
+#ifdef ATLAS_LOGGING 
+    enum class LogLevel {
+        Info,
+        Warning,
+        Error
+    };
+
+    class Logger {
+    public:
+        static void Log(const std::string& message, LogLevel level = LogLevel::Info) {
+            switch (level) {
+            case LogLevel::Info:
+                std::cout << "[INFO] " << message << std::endl;
+                break;
+            case LogLevel::Warning:
+                std::cout << "[WARNING] " << message << std::endl;
+                break;
+            case LogLevel::Error:
+                std::cerr << "[ERROR] " << message << std::endl;
+                break;
+            }
+        }
+
+        // Optional: Function to log SDL errors with a custom message
+        static void LogSDLError(const std::string& message) {
+            Log(message + " SDL Error: " + SDL_GetError(), LogLevel::Error);
+        }
+
+        // Optional: Function to log OpenGL debug messages
+        static void LogOpenGLDebug(const std::string& message, GLenum source, GLenum type, GLuint id, GLenum severity) {
+            std::string debugMessage = "OpenGL Debug message (" + std::to_string(id) + "): " + message;
+            LogLevel level = LogLevel::Info; // Default to info
+
+            if (severity == GL_DEBUG_SEVERITY_HIGH) {
+                level = LogLevel::Error;
+            }
+            else if (severity == GL_DEBUG_SEVERITY_MEDIUM) {
+                level = LogLevel::Warning;
+            }
+
+            Log(debugMessage, level);
+        }
+    };
+
+
+
+
+#endif
+
+
+
+
+
+
+
 }

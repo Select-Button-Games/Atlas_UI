@@ -56,29 +56,42 @@ int main(int argc, char* argv[]) {
         return -1;
     }
 
-    auto buttonClickCallback = []() {
-        std::cout << "Button Clicked!" << std::endl;
+    // Parent widget to hold checkboxes and labels
+    Atlas::createWidget(1, 0, 0, 400, 300, Atlas::WidgetOptions::WIDGET_DRAGGABLE, "metalPanel_green.png");
+
+    // First checkbox and label
+    Atlas::Text("Enable Feature A", 1.0f, 60, 20);
+    auto featureACallback = [](bool isChecked) {
+        std::cout << "Feature A is " << (isChecked ? "enabled" : "disabled") << "." << std::endl;
         };
+    Atlas::CheckBox(60, 40, false, featureACallback, "Feature A");
 
-    // Create some widgets
-    Atlas::createWidget(1, 0, 0, 400, 400, Atlas::WidgetOptions::WIDGET_DRAGGABLE, "metalPanel_green.png");
-
-    auto checkBox = [](bool isChecked) {
-        if (isChecked) {
-            std::cout << "CheckBox is checked." << std::endl;
-        }
-        else {
-            std::cout << "CheckBox is not checked." << std::endl;
-        }
+    // Second checkbox and label
+    Atlas::Text("Enable Feature B", 1.0f, 60, 70);
+    auto featureBCallback = [](bool isChecked) {
+        std::cout << "Feature B is " << (isChecked ? "enabled" : "disabled") << "." << std::endl;
         };
-    Atlas::CheckBox(10, 10, false, checkBox, "Click me");
-    Atlas::Text("CheckBox", 1.0f);
+    Atlas::CheckBox(60, 90, false, featureBCallback, "Feature B");
 
-    auto progressBar = [](float progress) {
-        std::cout << "Progress: " << progress << std::endl;
+    // Third checkbox and label
+    Atlas::Text("Enable Feature C", 1.0f, 60, 120);
+    auto featureCCallback = [](bool isChecked) {
+        std::cout << "Feature C is " << (isChecked ? "enabled" : "disabled") << "." << std::endl;
         };
-    Atlas::ProgressBar(20, 20, true, progressBar, 80, 30);
+    Atlas::CheckBox(60, 140, false, featureCCallback, "Feature C");
 
+    std::string detectedUrl = ""; // Global or member variable to store the detected URL
+
+    auto textBox = [](const std::string& text) {
+        std::cout << "Text entered: " << text << std::endl;
+
+    
+        };
+    //UI BUTTON
+    Atlas::TextInput(60, 200, 200, 30, textBox, "Test", Atlas::WidgetOptions::WIDGET_PASSWORD);
+
+
+    // Close the parent widget
     Atlas::endWidget();
 
     bool quit = false;
