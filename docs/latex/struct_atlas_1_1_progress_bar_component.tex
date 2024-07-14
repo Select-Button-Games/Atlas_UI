@@ -1,0 +1,190 @@
+\doxysection{Atlas\+::Progress\+Bar\+Component Struct Reference}
+\hypertarget{struct_atlas_1_1_progress_bar_component}{}\label{struct_atlas_1_1_progress_bar_component}\index{Atlas::ProgressBarComponent@{Atlas::ProgressBarComponent}}
+
+
+Inherits \mbox{\hyperlink{struct_atlas_1_1_u_i_component}{Atlas\+::\+UIComponent}}.
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{struct_atlas_1_1_progress_bar_component_ad609be18668006a5750d31bfda0be226}{Progress\+Bar\+Component}} (int x, int y, int width, int height, std\+::function$<$ void(bool)$>$ is\+Complete, float init\+Progress=0.\+0f)
+\item 
+virtual void \mbox{\hyperlink{struct_atlas_1_1_progress_bar_component_a34f8b113b07fe94c9f55eb0ba92f3dfd}{Draw}} () override
+\item 
+virtual void \mbox{\hyperlink{struct_atlas_1_1_progress_bar_component_a2df894bd40154e39c1cac04d1f5861ba}{handle\+Events}} (SDL\+\_\+\+Event \texorpdfstring{$\ast$}{*}event) override
+\item 
+virtual void \mbox{\hyperlink{struct_atlas_1_1_progress_bar_component_a268338c0552b0f58ba574ca26c61848f}{update\+Position}} (float deltaX, float deltaY) override
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+float \mbox{\hyperlink{struct_atlas_1_1_progress_bar_component_ae1a52cf344dace18004ae50cbf2645fb}{init\+Progress}} = 0.\+0f
+\item 
+int \mbox{\hyperlink{struct_atlas_1_1_progress_bar_component_ac697343187a71a66377f8f4beec5056c}{x}}
+\item 
+int \mbox{\hyperlink{struct_atlas_1_1_progress_bar_component_a59551fb4495bc4a0c54b15237ad7fe7b}{y}}
+\item 
+int \mbox{\hyperlink{struct_atlas_1_1_progress_bar_component_a0b04365519887a5075f7e0529e838f32}{width}}
+\item 
+int \mbox{\hyperlink{struct_atlas_1_1_progress_bar_component_acb5940a3ad4350983205df85a338c4da}{height}}
+\item 
+float \mbox{\hyperlink{struct_atlas_1_1_progress_bar_component_a02d8351718148f9f5f37fc82626f587e}{progress}}
+\item 
+std\+::function$<$ void(bool)$>$ \mbox{\hyperlink{struct_atlas_1_1_progress_bar_component_a8d679b7c11662cc88934e3ec16948735}{is\+Complete}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes inherited from \mbox{\hyperlink{struct_atlas_1_1_u_i_component}{Atlas\+::\+UIComponent}}}
+\begin{DoxyCompactItemize}
+\item 
+float \mbox{\hyperlink{struct_atlas_1_1_u_i_component_a1d070d5a97c406030f4d9784e12b8a63}{x}} = 0.\+0f
+\item 
+float \mbox{\hyperlink{struct_atlas_1_1_u_i_component_a7201d4018dba0cfbf3fe3993cddec8b0}{y}} = 0.\+0f
+\item 
+int \mbox{\hyperlink{struct_atlas_1_1_u_i_component_a454294d5b76b27e2d438f0d9b260ec19}{width}} = 0
+\item 
+int \mbox{\hyperlink{struct_atlas_1_1_u_i_component_a362c74c68b5d2a7fc707f8dd7241e103}{height}} = 0
+\item 
+\mbox{\hyperlink{struct_atlas_1_1_widget}{Widget}} \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{struct_atlas_1_1_u_i_component_aae24bcc3c9cb8fa07bd523a8b390fcba}{parent}} = nullptr
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line \mbox{\hyperlink{atlas__ui3_80_8h_source_l00645}{645}} of file \mbox{\hyperlink{atlas__ui3_80_8h_source}{atlas\+\_\+ui3.\+0.\+h}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{struct_atlas_1_1_progress_bar_component_ad609be18668006a5750d31bfda0be226}\label{struct_atlas_1_1_progress_bar_component_ad609be18668006a5750d31bfda0be226} 
+\index{Atlas::ProgressBarComponent@{Atlas::ProgressBarComponent}!ProgressBarComponent@{ProgressBarComponent}}
+\index{ProgressBarComponent@{ProgressBarComponent}!Atlas::ProgressBarComponent@{Atlas::ProgressBarComponent}}
+\doxysubsubsection{\texorpdfstring{ProgressBarComponent()}{ProgressBarComponent()}}
+{\footnotesize\ttfamily Atlas\+::\+Progress\+Bar\+Component\+::\+Progress\+Bar\+Component (\begin{DoxyParamCaption}\item[{int}]{x,  }\item[{int}]{y,  }\item[{int}]{width,  }\item[{int}]{height,  }\item[{std\+::function$<$ void(bool)$>$}]{is\+Complete,  }\item[{float}]{init\+Progress = {\ttfamily 0.0f} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{atlas__ui3_80_8h_source_l00653}{653}} of file \mbox{\hyperlink{atlas__ui3_80_8h_source}{atlas\+\_\+ui3.\+0.\+h}}.
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{struct_atlas_1_1_progress_bar_component_a34f8b113b07fe94c9f55eb0ba92f3dfd}\label{struct_atlas_1_1_progress_bar_component_a34f8b113b07fe94c9f55eb0ba92f3dfd} 
+\index{Atlas::ProgressBarComponent@{Atlas::ProgressBarComponent}!Draw@{Draw}}
+\index{Draw@{Draw}!Atlas::ProgressBarComponent@{Atlas::ProgressBarComponent}}
+\doxysubsubsection{\texorpdfstring{Draw()}{Draw()}}
+{\footnotesize\ttfamily virtual void Atlas\+::\+Progress\+Bar\+Component\+::\+Draw (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{struct_atlas_1_1_u_i_component}{Atlas\+::\+UIComponent}}.
+
+
+
+Definition at line \mbox{\hyperlink{atlas__ui3_80_8h_source_l00656}{656}} of file \mbox{\hyperlink{atlas__ui3_80_8h_source}{atlas\+\_\+ui3.\+0.\+h}}.
+
+\Hypertarget{struct_atlas_1_1_progress_bar_component_a2df894bd40154e39c1cac04d1f5861ba}\label{struct_atlas_1_1_progress_bar_component_a2df894bd40154e39c1cac04d1f5861ba} 
+\index{Atlas::ProgressBarComponent@{Atlas::ProgressBarComponent}!handleEvents@{handleEvents}}
+\index{handleEvents@{handleEvents}!Atlas::ProgressBarComponent@{Atlas::ProgressBarComponent}}
+\doxysubsubsection{\texorpdfstring{handleEvents()}{handleEvents()}}
+{\footnotesize\ttfamily virtual void Atlas\+::\+Progress\+Bar\+Component\+::handle\+Events (\begin{DoxyParamCaption}\item[{SDL\+\_\+\+Event \texorpdfstring{$\ast$}{*}}]{event }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{struct_atlas_1_1_u_i_component}{Atlas\+::\+UIComponent}}.
+
+
+
+Definition at line \mbox{\hyperlink{atlas__ui3_80_8h_source_l00679}{679}} of file \mbox{\hyperlink{atlas__ui3_80_8h_source}{atlas\+\_\+ui3.\+0.\+h}}.
+
+\Hypertarget{struct_atlas_1_1_progress_bar_component_a268338c0552b0f58ba574ca26c61848f}\label{struct_atlas_1_1_progress_bar_component_a268338c0552b0f58ba574ca26c61848f} 
+\index{Atlas::ProgressBarComponent@{Atlas::ProgressBarComponent}!updatePosition@{updatePosition}}
+\index{updatePosition@{updatePosition}!Atlas::ProgressBarComponent@{Atlas::ProgressBarComponent}}
+\doxysubsubsection{\texorpdfstring{updatePosition()}{updatePosition()}}
+{\footnotesize\ttfamily virtual void Atlas\+::\+Progress\+Bar\+Component\+::update\+Position (\begin{DoxyParamCaption}\item[{float}]{deltaX,  }\item[{float}]{deltaY }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{struct_atlas_1_1_u_i_component}{Atlas\+::\+UIComponent}}.
+
+
+
+Definition at line \mbox{\hyperlink{atlas__ui3_80_8h_source_l00693}{693}} of file \mbox{\hyperlink{atlas__ui3_80_8h_source}{atlas\+\_\+ui3.\+0.\+h}}.
+
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{struct_atlas_1_1_progress_bar_component_acb5940a3ad4350983205df85a338c4da}\label{struct_atlas_1_1_progress_bar_component_acb5940a3ad4350983205df85a338c4da} 
+\index{Atlas::ProgressBarComponent@{Atlas::ProgressBarComponent}!height@{height}}
+\index{height@{height}!Atlas::ProgressBarComponent@{Atlas::ProgressBarComponent}}
+\doxysubsubsection{\texorpdfstring{height}{height}}
+{\footnotesize\ttfamily int Atlas\+::\+Progress\+Bar\+Component\+::height}
+
+
+
+Definition at line \mbox{\hyperlink{atlas__ui3_80_8h_source_l00648}{648}} of file \mbox{\hyperlink{atlas__ui3_80_8h_source}{atlas\+\_\+ui3.\+0.\+h}}.
+
+\Hypertarget{struct_atlas_1_1_progress_bar_component_ae1a52cf344dace18004ae50cbf2645fb}\label{struct_atlas_1_1_progress_bar_component_ae1a52cf344dace18004ae50cbf2645fb} 
+\index{Atlas::ProgressBarComponent@{Atlas::ProgressBarComponent}!initProgress@{initProgress}}
+\index{initProgress@{initProgress}!Atlas::ProgressBarComponent@{Atlas::ProgressBarComponent}}
+\doxysubsubsection{\texorpdfstring{initProgress}{initProgress}}
+{\footnotesize\ttfamily float Atlas\+::\+Progress\+Bar\+Component\+::init\+Progress = 0.\+0f}
+
+
+
+Definition at line \mbox{\hyperlink{atlas__ui3_80_8h_source_l00646}{646}} of file \mbox{\hyperlink{atlas__ui3_80_8h_source}{atlas\+\_\+ui3.\+0.\+h}}.
+
+\Hypertarget{struct_atlas_1_1_progress_bar_component_a8d679b7c11662cc88934e3ec16948735}\label{struct_atlas_1_1_progress_bar_component_a8d679b7c11662cc88934e3ec16948735} 
+\index{Atlas::ProgressBarComponent@{Atlas::ProgressBarComponent}!isComplete@{isComplete}}
+\index{isComplete@{isComplete}!Atlas::ProgressBarComponent@{Atlas::ProgressBarComponent}}
+\doxysubsubsection{\texorpdfstring{isComplete}{isComplete}}
+{\footnotesize\ttfamily std\+::function$<$void(bool)$>$ Atlas\+::\+Progress\+Bar\+Component\+::is\+Complete}
+
+
+
+Definition at line \mbox{\hyperlink{atlas__ui3_80_8h_source_l00651}{651}} of file \mbox{\hyperlink{atlas__ui3_80_8h_source}{atlas\+\_\+ui3.\+0.\+h}}.
+
+\Hypertarget{struct_atlas_1_1_progress_bar_component_a02d8351718148f9f5f37fc82626f587e}\label{struct_atlas_1_1_progress_bar_component_a02d8351718148f9f5f37fc82626f587e} 
+\index{Atlas::ProgressBarComponent@{Atlas::ProgressBarComponent}!progress@{progress}}
+\index{progress@{progress}!Atlas::ProgressBarComponent@{Atlas::ProgressBarComponent}}
+\doxysubsubsection{\texorpdfstring{progress}{progress}}
+{\footnotesize\ttfamily float Atlas\+::\+Progress\+Bar\+Component\+::progress}
+
+
+
+Definition at line \mbox{\hyperlink{atlas__ui3_80_8h_source_l00650}{650}} of file \mbox{\hyperlink{atlas__ui3_80_8h_source}{atlas\+\_\+ui3.\+0.\+h}}.
+
+\Hypertarget{struct_atlas_1_1_progress_bar_component_a0b04365519887a5075f7e0529e838f32}\label{struct_atlas_1_1_progress_bar_component_a0b04365519887a5075f7e0529e838f32} 
+\index{Atlas::ProgressBarComponent@{Atlas::ProgressBarComponent}!width@{width}}
+\index{width@{width}!Atlas::ProgressBarComponent@{Atlas::ProgressBarComponent}}
+\doxysubsubsection{\texorpdfstring{width}{width}}
+{\footnotesize\ttfamily int Atlas\+::\+Progress\+Bar\+Component\+::width}
+
+
+
+Definition at line \mbox{\hyperlink{atlas__ui3_80_8h_source_l00648}{648}} of file \mbox{\hyperlink{atlas__ui3_80_8h_source}{atlas\+\_\+ui3.\+0.\+h}}.
+
+\Hypertarget{struct_atlas_1_1_progress_bar_component_ac697343187a71a66377f8f4beec5056c}\label{struct_atlas_1_1_progress_bar_component_ac697343187a71a66377f8f4beec5056c} 
+\index{Atlas::ProgressBarComponent@{Atlas::ProgressBarComponent}!x@{x}}
+\index{x@{x}!Atlas::ProgressBarComponent@{Atlas::ProgressBarComponent}}
+\doxysubsubsection{\texorpdfstring{x}{x}}
+{\footnotesize\ttfamily int Atlas\+::\+Progress\+Bar\+Component\+::x}
+
+
+
+Definition at line \mbox{\hyperlink{atlas__ui3_80_8h_source_l00647}{647}} of file \mbox{\hyperlink{atlas__ui3_80_8h_source}{atlas\+\_\+ui3.\+0.\+h}}.
+
+\Hypertarget{struct_atlas_1_1_progress_bar_component_a59551fb4495bc4a0c54b15237ad7fe7b}\label{struct_atlas_1_1_progress_bar_component_a59551fb4495bc4a0c54b15237ad7fe7b} 
+\index{Atlas::ProgressBarComponent@{Atlas::ProgressBarComponent}!y@{y}}
+\index{y@{y}!Atlas::ProgressBarComponent@{Atlas::ProgressBarComponent}}
+\doxysubsubsection{\texorpdfstring{y}{y}}
+{\footnotesize\ttfamily int Atlas\+::\+Progress\+Bar\+Component\+::y}
+
+
+
+Definition at line \mbox{\hyperlink{atlas__ui3_80_8h_source_l00647}{647}} of file \mbox{\hyperlink{atlas__ui3_80_8h_source}{atlas\+\_\+ui3.\+0.\+h}}.
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Users/tivoi/source/repos/\+Shine\+Ville UI Library/atlas\+\_\+ui3.\+0.\+h\end{DoxyCompactItemize}

@@ -1,0 +1,101 @@
+\doxysection{C\+:/\+Users/tivoi/source/repos/\+Shine\+Ville UI Library/legacy\+\_\+test.cpp}
+\hypertarget{legacy__test_8cpp_source}{}\label{legacy__test_8cpp_source}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00001}00001\ \textcolor{preprocessor}{\#define\ SDL\_MAIN\_HANDLED}}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00002}00002\ }
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00003}00003\ \textcolor{preprocessor}{\#include\ "{}sv\_ui2.0.h"{}}}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00004}00004\ \textcolor{preprocessor}{\#include\ "{}sv\_ui\_styles.h"{}}}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00005}00005\ }
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00006}00006\ \textcolor{keywordtype}{void}\ initializeCustomStyles()\ \{}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00007}00007\ \ \ \ \ \textcolor{comment}{//\ Custom\ button\ style}}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00008}00008\ \ \ \ \ SV\_UI::ButtonStyle\ customButtonStyle\ =\ \{}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00009}00009\ \ \ \ \ \ \ \ \ \{\ 0.9f,\ 0.9f,\ 0.9f\ \},\ \textcolor{comment}{//\ Normal\ color}}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00010}00010\ \ \ \ \ \ \ \ \ \{\ 1.0f,\ 1.0f,\ 1.0f\ \},\ \textcolor{comment}{//\ Hover\ color}}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00011}00011\ \ \ \ \ \ \ \ \ \{\ 0.8f,\ 0.8f,\ 0.8f\ \}\ \ \textcolor{comment}{//\ Pressed\ color}}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00012}00012\ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00013}00013\ \ \ \ \ SV\_UI::styles.setButtonStyle(customButtonStyle);}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00014}00014\ }
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00015}00015\ \ \ \ \ \textcolor{comment}{//\ Custom\ widget\ style}}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00016}00016\ \ \ \ \ SV\_UI::WidgetStyle\ customWidgetStyle\ =\ \{}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00017}00017\ \ \ \ \ \ \ \ \ \{\ 0.5f,\ 0.0f,\ 0.5f\ \},\ \textcolor{comment}{//\ Background\ color\ (purple)}}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00018}00018\ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00019}00019\ }
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00020}00020\ \ \ \ \ \textcolor{comment}{//\ Custom\ border\ style}}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00021}00021\ \ \ \ \ \textcolor{keywordtype}{float}\ borderColor[3]\ =\ \{\ 0.5f,\ 0.0f,\ 0.0f\ \};\ \textcolor{comment}{//\ Border\ color\ (black)}}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00022}00022\ \ \ \ \ SV\_UI::BorderStyle\ customBorderStyle(borderColor,\ 5,\ \textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00023}00023\ \ \ \ \ customWidgetStyle.borderStyle\ =\ customBorderStyle;}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00024}00024\ }
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00025}00025\ \ \ \ \ SV\_UI::styles.setWidgetStyle(customWidgetStyle);}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00026}00026\ \}}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00027}00027\ }
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00028}00028\ }
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00029}00029\ \textcolor{keywordtype}{void}\ sv\_uiExample()\ \{}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00030}00030\ \ \ \ \ \textcolor{comment}{//\ Init\ SDL}}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00031}00031\ \ \ \ \ SDL\_Init(SDL\_INIT\_EVERYTHING);}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00032}00032\ \ \ \ \ SDL\_Window*\ window\ =\ SDL\_CreateWindow(\textcolor{stringliteral}{"{}UI\ Example"{}},\ SDL\_WINDOWPOS\_CENTERED,\ SDL\_WINDOWPOS\_CENTERED,\ 1800,\ 700,\ SDL\_WINDOW\_OPENGL\ |\ SDL\_WINDOW\_RESIZABLE);}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00033}00033\ \ \ \ \ SDL\_GL\_CreateContext(window);}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00034}00034\ \ \ \ \ glewExperimental\ =\ GL\_TRUE;}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00035}00035\ \ \ \ \ \textcolor{keywordflow}{if}\ (glewInit()\ !=\ GLEW\_OK)}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00036}00036\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00037}00037\ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Failed\ to\ init\ GLEW\ "{}}\ <<\ std::endl;}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00038}00038\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00039}00039\ }
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00040}00040\ }
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00041}00041\ \ \ \ \ \textcolor{keywordtype}{int}\ windowWidth;}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00042}00042\ \ \ \ \ \textcolor{keywordtype}{int}\ windowHeight;}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00043}00043\ \ \ \ \ SDL\_GetWindowSize(window,\ \&windowWidth,\ \&windowHeight);}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00044}00044\ \ \ \ \ \textcolor{comment}{//\ After\ creating\ the\ OpenGL\ context}}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00045}00045\ \ \ \ \ glViewport(0,\ 0,\ windowWidth,\ windowHeight);}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00046}00046\ \ \ \ \ glMatrixMode(GL\_PROJECTION);}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00047}00047\ \ \ \ \ glLoadIdentity();}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00048}00048\ \ \ \ \ glOrtho(0,\ windowWidth,\ windowHeight,\ 0,\ -\/1,\ 1);}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00049}00049\ }
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00050}00050\ \ \ \ \ SV\_UI::TextRenderer\ textRenderer(\textcolor{stringliteral}{"{}arial.ttf"{}},\ 24);}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00051}00051\ }
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00052}00052\ \ \ \ \ GLuint\ dummyTexture\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00053}00053\ }
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00054}00054\ \ \ \ \ initializeCustomStyles();\ \textcolor{comment}{//\ Set\ custom\ styles\ if\ needed}}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00055}00055\ }
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00056}00056\ \ \ \ \ \textcolor{comment}{//\ Create\ widgets\ and\ components\ as\ usual}}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00057}00057\ \ \ \ \ SV\_UI::createWidget(100,\ 100,\ 400,\ 400,\ 1,\ dummyTexture,\ SV\_UI::WIDGET\_NONE);}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00058}00058\ \ \ \ \ SV\_UI::addTextComponent(\&textRenderer,\ \textcolor{stringliteral}{"{}Hello,\ World!"{}},\ 10,\ 10,\ SV\_UI::Alignment::Center);}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00059}00059\ \ \ \ \ SV\_UI::addButtonComponent(0,\ 0,\ 100,\ 30,\ []()\ \{}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00060}00060\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Button\ function\ in\ here}}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00061}00061\ \ \ \ \ \ \ \ \ SV\_UI::TextRenderer\ textRenderer2(\textcolor{stringliteral}{"{}arial.ttf"{}},\ 20);}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00062}00062\ \ \ \ \ \ \ \ \ SV\_UI::addTextComponent(\&textRenderer2,\ \textcolor{stringliteral}{"{}Button\ Pressed!"{}},\ 10,\ 10,\ SV\_UI::Alignment::Center);}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00063}00063\ \ \ \ \ \ \ \ \ \},\ \textcolor{stringliteral}{"{}Button\ Text"{}},\ \&textRenderer);}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00064}00064\ }
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00065}00065\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00066}00066\ }
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00067}00067\ \ \ \ \ SV\_UI::endWidget();}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00068}00068\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00069}00069\ }
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00086}00086\ \ \ \ \ \textcolor{comment}{//\ Main\ loop}}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00087}00087\ \ \ \ \ \textcolor{keywordtype}{bool}\ running\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00088}00088\ \ \ \ \ SDL\_Event\ event;}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00089}00089\ \ \ \ \ \textcolor{keywordflow}{while}\ (running)\ \{}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00090}00090\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (SDL\_PollEvent(\&event))\ \{}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00091}00091\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (event.type\ ==\ SDL\_QUIT)\ \{}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00092}00092\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ running\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00093}00093\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00094}00094\ \ \ \ \ \ \ \ \ \ \ \ \ SV\_UI::handleUIManagerEvents(SV\_UI::uiManager,\ \&event);}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00095}00095\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00096}00096\ }
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00097}00097\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Clear\ the\ screen\ and\ draw\ the\ UI}}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00098}00098\ \ \ \ \ \ \ \ \ glClear(GL\_COLOR\_BUFFER\_BIT);}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00099}00099\ \ \ \ \ \ \ \ \ SV\_UI::drawUIManager(SV\_UI::uiManager);}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00100}00100\ \ \ \ \ \ \ \ \ SDL\_GL\_SwapWindow(window);}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00101}00101\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00102}00102\ }
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00103}00103\ \ \ \ \ \textcolor{comment}{//\ Clean\ up}}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00104}00104\ \ \ \ \ SDL\_DestroyWindow(window);}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00105}00105\ \ \ \ \ SDL\_Quit();}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00106}00106\ \}}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00107}00107\ }
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00108}00108\ \textcolor{keywordtype}{int}\ main(\textcolor{keywordtype}{int}\ argc,\ \textcolor{keywordtype}{char}*\ argv[])}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00109}00109\ \{}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00110}00110\ \ \ \ \ sv\_uiExample();}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00111}00111\ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\Hypertarget{legacy__test_8cpp_source_l00112}00112\ \}}
+
+\end{DoxyCode}

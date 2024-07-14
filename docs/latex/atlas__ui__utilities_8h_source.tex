@@ -1,0 +1,251 @@
+\doxysection{C\+:/\+Users/tivoi/source/repos/\+Shine\+Ville UI Library/atlas\+\_\+ui\+\_\+utilities.h}
+\hypertarget{atlas__ui__utilities_8h_source}{}\label{atlas__ui__utilities_8h_source}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00001}00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00002}00002\ }
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00006}00006\ \textcolor{preprocessor}{\#define\ APIENTRY\ GLAPIENTRY}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <GL/glew.h>}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00008}00008\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00009}00009\ }
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00010}00010\ }
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00011}00011\ \textcolor{keyword}{namespace\ }Atlas\ \{}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00012}00012\ }
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00017}00017\ }
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00018}00018\ \textcolor{preprocessor}{\#ifdef\ SETUP\_SDL\_OPENGL}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00019}00019\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ SCREEN\_WIDTH\ =\ 1800;}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00020}00020\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ SCREEN\_HEIGHT\ =\ 900;}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00021}00021\ }
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00022}00022\ \ \ \ \ SDL\_Window*\ g\_window\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00023}00023\ \ \ \ \ SDL\_GLContext\ g\_context\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00024}00024\ }
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00025}00025\ \ \ \ \ \textcolor{keywordtype}{bool}\ initSDL(SDL\_Window*\&\ window,\ SDL\_GLContext\&\ context,\ \textcolor{keyword}{const}\ std::string\&\ windowName,\ \textcolor{keywordtype}{int}\ windowWidth,\ \textcolor{keywordtype}{int}\ windowHeight)\ \{}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00026}00026\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (SDL\_Init(SDL\_INIT\_VIDEO)\ <\ 0)\ \{}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00027}00027\ \ \ \ \ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Failed\ to\ initialize\ SDL:\ "{}}\ <<\ SDL\_GetError()\ <<\ std::endl;}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00028}00028\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00029}00029\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00030}00030\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!(IMG\_Init(IMG\_INIT\_PNG)\ \&\ IMG\_INIT\_PNG))\ \{}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00031}00031\ \ \ \ \ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Failed\ to\ initialize\ SDL\_image:\ "{}}\ <<\ IMG\_GetError()\ <<\ std::endl;}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00032}00032\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00033}00033\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00034}00034\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (TTF\_Init()\ ==\ -\/1)\ \{}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00035}00035\ \ \ \ \ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}TTF\_Init:\ "{}}\ <<\ TTF\_GetError()\ <<\ std::endl;}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00036}00036\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00037}00037\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00038}00038\ \ \ \ \ \ \ \ \ SDL\_GL\_SetAttribute(SDL\_GL\_CONTEXT\_MAJOR\_VERSION,\ 3);}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00039}00039\ \ \ \ \ \ \ \ \ SDL\_GL\_SetAttribute(SDL\_GL\_CONTEXT\_MINOR\_VERSION,\ 3);}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00040}00040\ \ \ \ \ \ \ \ \ SDL\_GL\_SetAttribute(SDL\_GL\_CONTEXT\_PROFILE\_MASK,\ SDL\_GL\_CONTEXT\_PROFILE\_CORE);}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00041}00041\ }
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00042}00042\ \ \ \ \ \ \ \ \ window\ =\ SDL\_CreateWindow(windowName.c\_str(),\ SDL\_WINDOWPOS\_CENTERED,\ SDL\_WINDOWPOS\_CENTERED,\ windowWidth,\ windowHeight,\ SDL\_WINDOW\_OPENGL\ |\ SDL\_WINDOW\_SHOWN);}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00043}00043\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!window)\ \{}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00044}00044\ \ \ \ \ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Failed\ to\ create\ window:\ "{}}\ <<\ SDL\_GetError()\ <<\ std::endl;}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00045}00045\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00046}00046\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00047}00047\ }
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00048}00048\ \ \ \ \ \ \ \ \ context\ =\ SDL\_GL\_CreateContext(window);}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00049}00049\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!context)\ \{}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00050}00050\ \ \ \ \ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Failed\ to\ create\ OpenGL\ context:\ "{}}\ <<\ SDL\_GetError()\ <<\ std::endl;}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00051}00051\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00052}00052\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00053}00053\ }
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00054}00054\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (SDL\_GL\_SetSwapInterval(1)\ <\ 0)\ \{}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00055}00055\ \ \ \ \ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Failed\ to\ set\ VSync:\ "{}}\ <<\ SDL\_GetError()\ <<\ std::endl;}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00056}00056\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00057}00057\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00058}00058\ }
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00059}00059\ \ \ \ \ \ \ \ \ glewExperimental\ =\ GL\_TRUE;}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00060}00060\ \ \ \ \ \ \ \ \ GLenum\ err\ =\ glewInit();}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00061}00061\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (err\ !=\ GLEW\_OK)\ \{}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00062}00062\ \ \ \ \ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}GLEW\ initialization\ error:\ "{}}\ <<\ glewGetErrorString(err)\ <<\ std::endl;}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00063}00063\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00064}00064\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00065}00065\ }
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00066}00066\ \ \ \ \ \ \ \ \ glViewport(0,\ 0,\ windowWidth,\ windowHeight);}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00067}00067\ \ \ \ \ \ \ \ \ glEnable(GL\_BLEND);}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00068}00068\ \ \ \ \ \ \ \ \ glBlendFunc(GL\_SRC\_ALPHA,\ GL\_ONE\_MINUS\_SRC\_ALPHA);}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00069}00069\ }
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00070}00070\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00071}00071\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00072}00072\ }
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00073}00073\ \ \ \ \ \textcolor{keywordtype}{void}\ closeSDL(SDL\_Window*\ window,\ SDL\_GLContext\ context)\ \{}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00074}00074\ \ \ \ \ \ \ \ \ SDL\_GL\_DeleteContext(context);}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00075}00075\ \ \ \ \ \ \ \ \ SDL\_DestroyWindow(window);}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00076}00076\ \ \ \ \ \ \ \ \ SDL\_Quit();}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00077}00077\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00078}00078\ }
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00079}00079\ \ \ \ \ \textcolor{keywordtype}{void}\ debugOpenGL()\ \{}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00080}00080\ \ \ \ \ \ \ \ \ GLenum\ err;}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00081}00081\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ ((err\ =\ glGetError())\ !=\ GL\_NO\_ERROR)\ \{}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00082}00082\ \ \ \ \ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}OpenGL\ error:\ "{}}\ <<\ err\ <<\ std::endl;}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00083}00083\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00084}00084\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00085}00085\ }
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00086}00086\ \ \ \ \ \textcolor{comment}{//\ New\ Setup\ function}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00087}00087\ \ \ \ \textcolor{comment}{//\ Modified\ Setup\ function\ to\ use\ global\ variables}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00088}00088\ \ \ \ \ \textcolor{keywordtype}{bool}\ Setup(\textcolor{keyword}{const}\ std::string\&\ windowName,\ \textcolor{keywordtype}{int}\ windowWidth\ =\ SCREEN\_WIDTH,\ \textcolor{keywordtype}{int}\ windowHeight\ =\ SCREEN\_HEIGHT)\ \{}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00089}00089\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (SDL\_Init(SDL\_INIT\_VIDEO)\ <\ 0)\ \{}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00090}00090\ \ \ \ \ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Failed\ to\ initialize\ SDL:\ "{}}\ <<\ SDL\_GetError()\ <<\ std::endl;}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00091}00091\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00092}00092\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00093}00093\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!(IMG\_Init(IMG\_INIT\_PNG)\ \&\ IMG\_INIT\_PNG))\ \{}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00094}00094\ \ \ \ \ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Failed\ to\ initialize\ SDL\_image:\ "{}}\ <<\ IMG\_GetError()\ <<\ std::endl;}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00095}00095\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00096}00096\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00097}00097\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (TTF\_Init()\ ==\ -\/1)\ \{}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00098}00098\ \ \ \ \ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}TTF\_Init:\ "{}}\ <<\ TTF\_GetError()\ <<\ std::endl;}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00099}00099\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00100}00100\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00101}00101\ \ \ \ \ \ \ \ \ SDL\_GL\_SetAttribute(SDL\_GL\_CONTEXT\_MAJOR\_VERSION,\ 3);}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00102}00102\ \ \ \ \ \ \ \ \ SDL\_GL\_SetAttribute(SDL\_GL\_CONTEXT\_MINOR\_VERSION,\ 3);}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00103}00103\ \ \ \ \ \ \ \ \ SDL\_GL\_SetAttribute(SDL\_GL\_CONTEXT\_PROFILE\_MASK,\ SDL\_GL\_CONTEXT\_PROFILE\_CORE);}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00104}00104\ }
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00105}00105\ \ \ \ \ \ \ \ \ g\_window\ =\ SDL\_CreateWindow(windowName.c\_str(),\ SDL\_WINDOWPOS\_CENTERED,\ SDL\_WINDOWPOS\_CENTERED,\ windowWidth,\ windowHeight,\ SDL\_WINDOW\_OPENGL\ |\ SDL\_WINDOW\_SHOWN);}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00106}00106\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!g\_window)\ \{}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00107}00107\ \ \ \ \ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Failed\ to\ create\ window:\ "{}}\ <<\ SDL\_GetError()\ <<\ std::endl;}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00108}00108\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00109}00109\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00110}00110\ }
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00111}00111\ \ \ \ \ \ \ \ \ g\_context\ =\ SDL\_GL\_CreateContext(g\_window);}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00112}00112\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!g\_context)\ \{}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00113}00113\ \ \ \ \ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Failed\ to\ create\ OpenGL\ context:\ "{}}\ <<\ SDL\_GetError()\ <<\ std::endl;}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00114}00114\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00115}00115\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00116}00116\ }
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00117}00117\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (SDL\_GL\_SetSwapInterval(1)\ <\ 0)\ \{}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00118}00118\ \ \ \ \ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Failed\ to\ set\ VSync:\ "{}}\ <<\ SDL\_GetError()\ <<\ std::endl;}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00119}00119\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00120}00120\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00121}00121\ }
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00122}00122\ \ \ \ \ \ \ \ \ glewExperimental\ =\ GL\_TRUE;}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00123}00123\ \ \ \ \ \ \ \ \ GLenum\ err\ =\ glewInit();}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00124}00124\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (err\ !=\ GLEW\_OK)\ \{}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00125}00125\ \ \ \ \ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}GLEW\ initialization\ error:\ "{}}\ <<\ glewGetErrorString(err)\ <<\ std::endl;}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00126}00126\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00127}00127\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00128}00128\ }
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00129}00129\ \ \ \ \ \ \ \ \ glViewport(0,\ 0,\ windowWidth,\ windowHeight);}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00130}00130\ \ \ \ \ \ \ \ \ glEnable(GL\_BLEND);}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00131}00131\ \ \ \ \ \ \ \ \ glBlendFunc(GL\_SRC\_ALPHA,\ GL\_ONE\_MINUS\_SRC\_ALPHA);}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00132}00132\ }
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00133}00133\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00134}00134\ \}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00135}00135\ }
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00136}00136\ }
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00137}00137\ \ \ \ \ \textcolor{keywordtype}{void}\ Shutdown()\ \{}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00138}00138\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (g\_context)\ \{}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00139}00139\ \ \ \ \ \ \ \ \ \ \ \ \ SDL\_GL\_DeleteContext(g\_context);}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00140}00140\ \ \ \ \ \ \ \ \ \ \ \ \ g\_context\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00141}00141\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00142}00142\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (g\_window)\ \{}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00143}00143\ \ \ \ \ \ \ \ \ \ \ \ \ SDL\_DestroyWindow(g\_window);}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00144}00144\ \ \ \ \ \ \ \ \ \ \ \ \ g\_window\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00145}00145\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00146}00146\ \ \ \ \ \ \ \ \ IMG\_Quit();}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00147}00147\ \ \ \ \ \ \ \ \ TTF\_Quit();}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00148}00148\ \ \ \ \ \ \ \ \ SDL\_Quit();}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00149}00149\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00150}00150\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00151}00151\ }
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00152}00152\ }
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00153}00153\ }
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00154}00154\ }
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00155}00155\ }
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00159}00159\ }
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00160}00160\ \ \ \ \ \textcolor{comment}{//\ Callback\ function\ for\ debugging}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00161}00161\ \ \ \ \ \textcolor{keywordtype}{void}\ APIENTRY\ glDebugOutput(GLenum\ source,\ GLenum\ type,\ GLuint\ \textcolor{keywordtype}{id},\ GLenum\ severity,\ GLsizei\ length,\ \textcolor{keyword}{const}\ GLchar*\ message,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{void}*\ userParam)\ \{}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00162}00162\ }
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00163}00163\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Ignore\ non-\/significant\ error/warning\ codes}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00164}00164\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keywordtype}{id}\ ==\ 131169\ ||\ \textcolor{keywordtype}{id}\ ==\ 131185\ ||\ \textcolor{keywordtype}{id}\ ==\ 131218\ ||\ \textcolor{keywordtype}{id}\ ==\ 131204)\ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00165}00165\ }
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00166}00166\ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/"{}}\ <<\ std::endl;}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00167}00167\ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Debug\ message\ ("{}}\ <<\ \textcolor{keywordtype}{id}\ <<\ \textcolor{stringliteral}{"{}):\ "{}}\ <<\ message\ <<\ std::endl;}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00168}00168\ }
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00169}00169\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}\ (source)\ \{}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00170}00170\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ GL\_DEBUG\_SOURCE\_API:\ \ \ \ \ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Source:\ API"{}};\ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00171}00171\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ GL\_DEBUG\_SOURCE\_WINDOW\_SYSTEM:\ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Source:\ Window\ System"{}};\ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00172}00172\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ GL\_DEBUG\_SOURCE\_SHADER\_COMPILER:\ std::cerr\ <<\ \textcolor{stringliteral}{"{}Source:\ Shader\ Compiler"{}};\ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00173}00173\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ GL\_DEBUG\_SOURCE\_THIRD\_PARTY:\ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Source:\ Third\ Party"{}};\ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00174}00174\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ GL\_DEBUG\_SOURCE\_APPLICATION:\ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Source:\ Application"{}};\ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00175}00175\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ GL\_DEBUG\_SOURCE\_OTHER:\ \ \ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Source:\ Other"{}};\ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00176}00176\ \ \ \ \ \ \ \ \ \}\ std::cerr\ <<\ std::endl;}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00177}00177\ }
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00178}00178\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}\ (type)\ \{}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00179}00179\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ GL\_DEBUG\_TYPE\_ERROR:\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Type:\ Error"{}};\ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00180}00180\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ GL\_DEBUG\_TYPE\_DEPRECATED\_BEHAVIOR:\ std::cerr\ <<\ \textcolor{stringliteral}{"{}Type:\ Deprecated\ Behaviour"{}};\ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00181}00181\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ GL\_DEBUG\_TYPE\_UNDEFINED\_BEHAVIOR:\ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Type:\ Undefined\ Behaviour"{}};\ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00182}00182\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ GL\_DEBUG\_TYPE\_PORTABILITY:\ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Type:\ Portability"{}};\ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00183}00183\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ GL\_DEBUG\_TYPE\_PERFORMANCE:\ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Type:\ Performance"{}};\ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00184}00184\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ GL\_DEBUG\_TYPE\_MARKER:\ \ \ \ \ \ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Type:\ Marker"{}};\ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00185}00185\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ GL\_DEBUG\_TYPE\_PUSH\_GROUP:\ \ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Type:\ Push\ Group"{}};\ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00186}00186\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ GL\_DEBUG\_TYPE\_POP\_GROUP:\ \ \ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Type:\ Pop\ Group"{}};\ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00187}00187\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ GL\_DEBUG\_TYPE\_OTHER:\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Type:\ Other"{}};\ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00188}00188\ \ \ \ \ \ \ \ \ \}\ std::cerr\ <<\ std::endl;}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00189}00189\ }
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00190}00190\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}\ (severity)\ \{}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00191}00191\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ GL\_DEBUG\_SEVERITY\_HIGH:\ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Severity:\ high"{}};\ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00192}00192\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ GL\_DEBUG\_SEVERITY\_MEDIUM:\ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Severity:\ medium"{}};\ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00193}00193\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ GL\_DEBUG\_SEVERITY\_LOW:\ \ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Severity:\ low"{}};\ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00194}00194\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ GL\_DEBUG\_SEVERITY\_NOTIFICATION:\ std::cerr\ <<\ \textcolor{stringliteral}{"{}Severity:\ notification"{}};\ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00195}00195\ \ \ \ \ \ \ \ \ \}\ std::cerr\ <<\ std::endl;}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00196}00196\ \ \ \ \ \ \ \ \ std::cerr\ <<\ std::endl;}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00197}00197\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00198}00198\ }
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00199}00199\ \ \ \ \ \textcolor{comment}{//\ Function\ to\ initialize\ OpenGL\ debugging}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00200}00200\ \ \ \ \ \textcolor{keywordtype}{void}\ initOpenGLDebug()\ \{}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00201}00201\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (glewIsSupported(\textcolor{stringliteral}{"{}GL\_KHR\_debug"{}}))\ \{}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00202}00202\ \ \ \ \ \ \ \ \ \ \ \ \ glEnable(GL\_DEBUG\_OUTPUT);}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00203}00203\ \ \ \ \ \ \ \ \ \ \ \ \ glEnable(GL\_DEBUG\_OUTPUT\_SYNCHRONOUS);}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00204}00204\ \ \ \ \ \ \ \ \ \ \ \ \ glDebugMessageCallback(\textcolor{keyword}{static\_cast<}GLDEBUGPROC\textcolor{keyword}{>}(glDebugOutput),\ \textcolor{keyword}{nullptr});\ \textcolor{comment}{//\ Cast\ to\ GLDEBUGPROC}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00205}00205\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Other\ setup\ remains\ the\ same...}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00206}00206\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00207}00207\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00208}00208\ }
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00209}00209\ \ \ \ \ \textcolor{keyword}{enum\ class}\ Alignment\ \{}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00210}00210\ \ \ \ \ \ \ \ \ TopLeft,}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00211}00211\ \ \ \ \ \ \ \ \ TopCenter,}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00212}00212\ \ \ \ \ \ \ \ \ TopRight,}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00213}00213\ \ \ \ \ \ \ \ \ CenterLeft,}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00214}00214\ \ \ \ \ \ \ \ \ Center,}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00215}00215\ \ \ \ \ \ \ \ \ CenterRight,}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00216}00216\ \ \ \ \ \ \ \ \ BottomLeft,}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00217}00217\ \ \ \ \ \ \ \ \ BottomCenter,}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00218}00218\ \ \ \ \ \ \ \ \ BottomRight}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00219}00219\ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00220}00220\ }
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00221}00221\ \ \ \ \ \textcolor{keywordtype}{void}\ calculatePositionForAlignment(\textcolor{keywordtype}{float}\&\ x,\ \textcolor{keywordtype}{float}\&\ y,\ \textcolor{keywordtype}{int}\ compWidth,\ \textcolor{keywordtype}{int}\ compHeight,\ \textcolor{keywordtype}{int}\ parentWidth,\ \textcolor{keywordtype}{int}\ parentHeight,\ Alignment\ alignment)\ \{}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00222}00222\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}\ (alignment)\ \{}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00223}00223\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ Alignment::TopLeft:}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00224}00224\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ x\ and\ y\ remain\ unchanged}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00225}00225\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00226}00226\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ Alignment::TopCenter:}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00227}00227\ \ \ \ \ \ \ \ \ \ \ \ \ x\ =\ (parentWidth\ -\/\ compWidth)\ /\ 2;}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00228}00228\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00229}00229\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ Alignment::TopRight:}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00230}00230\ \ \ \ \ \ \ \ \ \ \ \ \ x\ =\ parentWidth\ -\/\ compWidth;}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00231}00231\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00232}00232\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ Alignment::CenterLeft:}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00233}00233\ \ \ \ \ \ \ \ \ \ \ \ \ y\ =\ (parentHeight\ -\/\ compHeight)\ /\ 2;}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00234}00234\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00235}00235\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ Alignment::Center:}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00236}00236\ \ \ \ \ \ \ \ \ \ \ \ \ x\ =\ (parentWidth\ -\/\ compWidth)\ /\ 2;}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00237}00237\ \ \ \ \ \ \ \ \ \ \ \ \ y\ =\ (parentHeight\ -\/\ compHeight)\ /\ 2;}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00238}00238\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00239}00239\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ Alignment::CenterRight:}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00240}00240\ \ \ \ \ \ \ \ \ \ \ \ \ x\ =\ parentWidth\ -\/\ compWidth;}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00241}00241\ \ \ \ \ \ \ \ \ \ \ \ \ y\ =\ (parentHeight\ -\/\ compHeight)\ /\ 2;}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00242}00242\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00243}00243\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ Alignment::BottomLeft:}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00244}00244\ \ \ \ \ \ \ \ \ \ \ \ \ y\ =\ parentHeight\ -\/\ compHeight;}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00245}00245\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00246}00246\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ Alignment::BottomCenter:}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00247}00247\ \ \ \ \ \ \ \ \ \ \ \ \ x\ =\ (parentWidth\ -\/\ compWidth)\ /\ 2;}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00248}00248\ \ \ \ \ \ \ \ \ \ \ \ \ y\ =\ parentHeight\ -\/\ compHeight;}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00249}00249\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00250}00250\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ Alignment::BottomRight:}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00251}00251\ \ \ \ \ \ \ \ \ \ \ \ \ x\ =\ parentWidth\ -\/\ compWidth;}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00252}00252\ \ \ \ \ \ \ \ \ \ \ \ \ y\ =\ parentHeight\ -\/\ compHeight;}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00253}00253\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00254}00254\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00255}00255\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{atlas__ui__utilities_8h_source_l00256}00256\ \}}
+
+\end{DoxyCode}

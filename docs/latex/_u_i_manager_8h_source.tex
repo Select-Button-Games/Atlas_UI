@@ -1,0 +1,75 @@
+\doxysection{C\+:/\+Users/tivoi/source/repos/\+Shine\+Ville UI Library/\+UIManager.h}
+\hypertarget{_u_i_manager_8h_source}{}\label{_u_i_manager_8h_source}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00001}00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00002}00002\ \textcolor{preprocessor}{\#include\ <fstream>}}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00003}00003\ \textcolor{preprocessor}{\#include\ <sstream>}\ \textcolor{comment}{//\ Include\ for\ std::stringstream}}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00004}00004\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00005}00005\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00006}00006\ \textcolor{preprocessor}{\#include\ <vector>}\ \textcolor{comment}{//\ Include\ if\ not\ already\ included}}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00007}00007\ }
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00008}\mbox{\hyperlink{class_u_i_config_manager}{00008}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_u_i_config_manager}{UIConfigManager}}\ \{}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00009}00009\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00010}00010\ \ \ \ \ std::string\ configFilePath;}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00011}00011\ \ \ \ \ std::unordered\_map<std::string,\ std::string>\ configMap;}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00012}00012\ }
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00013}00013\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00014}00014\ \ \ \ \ \mbox{\hyperlink{class_u_i_config_manager}{UIConfigManager}}(\textcolor{keyword}{const}\ std::string\&\ filePath)\ :\ configFilePath(filePath)\ \{\}}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00015}00015\ }
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00016}00016\ \ \ \ \ \textcolor{keywordtype}{void}\ loadConfig()\ \{}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00017}00017\ \ \ \ \ \ \ \ \ std::ifstream\ configFile(configFilePath);}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00018}00018\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (configFile)\ \{}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00019}00019\ \ \ \ \ \ \ \ \ \ \ \ \ std::string\ line;}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00020}00020\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (std::getline(configFile,\ line))\ \{}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00021}00021\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ delimiterPos\ =\ line.find(\textcolor{charliteral}{'='});}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00022}00022\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (delimiterPos\ !=\ std::string::npos)\ \{}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00023}00023\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::string\ key\ =\ line.substr(0,\ delimiterPos);}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00024}00024\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::string\ value\ =\ line.substr(delimiterPos\ +\ 1);}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00025}00025\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ configMap[key]\ =\ value;}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00026}00026\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00027}00027\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00028}00028\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00029}00029\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00030}00030\ }
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00031}00031\ \ \ \ \ \textcolor{keywordtype}{void}\ saveConfig()\ \{}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00032}00032\ \ \ \ \ \ \ \ \ std::ofstream\ configFile(configFilePath);}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00033}00033\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ pair\ :\ configMap)\ \{}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00034}00034\ \ \ \ \ \ \ \ \ \ \ \ \ configFile\ <<\ pair.first\ <<\ \textcolor{stringliteral}{"{}="{}}\ <<\ pair.second\ <<\ std::endl;}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00035}00035\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00036}00036\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00037}00037\ }
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00038}00038\ \ \ \ \ std::string\ getValue(\textcolor{keyword}{const}\ std::string\&\ key)\ \{}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00039}00039\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ it\ =\ configMap.find(key);}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00040}00040\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (it\ !=\ configMap.end())\ \{}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00041}00041\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ it-\/>second;}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00042}00042\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00043}00043\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00044}00044\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00045}00045\ }
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00046}00046\ \ \ \ \ \textcolor{keywordtype}{void}\ setValue(\textcolor{keyword}{const}\ std::string\&\ key,\ \textcolor{keyword}{const}\ std::string\&\ value)\ \{}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00047}00047\ \ \ \ \ \ \ \ \ configMap[key]\ =\ value;}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00048}00048\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00049}00049\ }
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00050}00050\ \ \ \ \ \textcolor{keywordtype}{void}\ saveComponentConfig(\textcolor{keyword}{const}\ std::string\&\ key,\ \textcolor{keyword}{const}\ std::vector<std::string>\&\ componentProperties)\ \{}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00051}00051\ \ \ \ \ \ \ \ \ std::string\ serialized\ =\ \textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00052}00052\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ prop\ :\ componentProperties)\ \{}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00053}00053\ \ \ \ \ \ \ \ \ \ \ \ \ serialized\ +=\ prop\ +\ \textcolor{stringliteral}{"{};"{}};}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00054}00054\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00055}00055\ \ \ \ \ \ \ \ \ setValue(key,\ serialized);}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00056}00056\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00057}00057\ }
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00058}00058\ \ \ \ \ std::vector<std::string>\ loadComponentConfig(\textcolor{keyword}{const}\ std::string\&\ key)\ \{}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00059}00059\ \ \ \ \ \ \ \ \ std::vector<std::string>\ properties;}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00060}00060\ \ \ \ \ \ \ \ \ std::string\ serialized\ =\ getValue(key);}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00061}00061\ \ \ \ \ \ \ \ \ std::stringstream\ ss(serialized);}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00062}00062\ \ \ \ \ \ \ \ \ std::string\ item;}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00063}00063\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (std::getline(ss,\ item,\ \textcolor{charliteral}{';'}))\ \{}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00064}00064\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!item.empty())\ \{\ \textcolor{comment}{//\ Check\ to\ avoid\ adding\ empty\ strings}}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00065}00065\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ properties.push\_back(item);}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00066}00066\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00067}00067\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00068}00068\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ properties;}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00069}00069\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_u_i_manager_8h_source_l00070}00070\ \};}
+
+\end{DoxyCode}

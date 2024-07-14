@@ -1,0 +1,111 @@
+\doxysection{C\+:/\+Users/tivoi/source/repos/\+Shine\+Ville UI Library/main.cpp}
+\hypertarget{main_8cpp_source}{}\label{main_8cpp_source}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00001}00001\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00002}00002\ \textcolor{preprocessor}{\#define\ SETUP\_SDL\_OPENGL}}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00003}00003\ \textcolor{preprocessor}{\#include\ "{}atlas\_ui3.0.h"{}}}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00004}00004\ \textcolor{preprocessor}{\#include\ "{}atlas\_ui\_utilities.h"{}}}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00005}00005\ }
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00006}00006\ GLuint\ loadTexture(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ path)\ \{}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00007}00007\ \ \ \ \ SDL\_Surface*\ surface\ =\ IMG\_Load(path);\ \textcolor{comment}{//\ Use\ IMG\_Load\ instead\ of\ SDL\_LoadBMP}}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00008}00008\ \ \ \ \ \textcolor{keywordflow}{if}\ (!surface)\ \{}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00009}00009\ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Failed\ to\ load\ texture:\ "{}}\ <<\ IMG\_GetError()\ <<\ std::endl;\ \textcolor{comment}{//\ Use\ IMG\_GetError\ for\ error\ reporting}}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00010}00010\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00011}00011\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00012}00012\ }
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00013}00013\ \ \ \ \ GLuint\ texture;}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00014}00014\ \ \ \ \ glGenTextures(1,\ \&texture);}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00015}00015\ \ \ \ \ glBindTexture(GL\_TEXTURE\_2D,\ texture);}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00016}00016\ }
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00017}00017\ \ \ \ \ \textcolor{comment}{//\ Determine\ the\ format\ of\ the\ image}}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00018}00018\ \ \ \ \ GLenum\ format;}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00019}00019\ \ \ \ \ \textcolor{keywordflow}{if}\ (surface-\/>format-\/>BytesPerPixel\ ==\ 4)\ \{}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00020}00020\ \ \ \ \ \ \ \ \ format\ =\ surface-\/>format-\/>Rmask\ ==\ 0x000000ff\ ?\ GL\_RGBA\ :\ GL\_BGRA;}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00021}00021\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00022}00022\ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00023}00023\ \ \ \ \ \ \ \ \ format\ =\ surface-\/>format-\/>Rmask\ ==\ 0x000000ff\ ?\ GL\_RGB\ :\ GL\_BGR;}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00024}00024\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00025}00025\ }
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00026}00026\ \ \ \ \ glTexImage2D(GL\_TEXTURE\_2D,\ 0,\ format\ ==\ GL\_RGBA\ ?\ GL\_RGBA\ :\ GL\_RGB,\ surface-\/>w,\ surface-\/>h,\ 0,\ format,\ GL\_UNSIGNED\_BYTE,\ surface-\/>pixels);}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00027}00027\ }
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00028}00028\ \ \ \ \ \textcolor{comment}{//\ Generate\ mipmaps}}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00029}00029\ \ \ \ \ glGenerateMipmap(GL\_TEXTURE\_2D);}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00030}00030\ }
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00031}00031\ \ \ \ \ \textcolor{comment}{//\ Set\ texture\ filtering\ parameters}}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00032}00032\ \ \ \ \ glTexParameteri(GL\_TEXTURE\_2D,\ GL\_TEXTURE\_MIN\_FILTER,\ GL\_LINEAR\_MIPMAP\_LINEAR);\ \textcolor{comment}{//\ Use\ mipmaps\ for\ minification}}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00033}00033\ \ \ \ \ glTexParameteri(GL\_TEXTURE\_2D,\ GL\_TEXTURE\_MAG\_FILTER,\ GL\_LINEAR);}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00034}00034\ }
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00035}00035\ \ \ \ \ \textcolor{comment}{//\ Set\ texture\ wrapping\ parameters\ (optional,\ but\ good\ to\ check)}}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00036}00036\ \ \ \ \ glTexParameteri(GL\_TEXTURE\_2D,\ GL\_TEXTURE\_WRAP\_S,\ GL\_CLAMP\_TO\_EDGE);\ \textcolor{comment}{//\ Changed\ to\ GL\_CLAMP\_TO\_EDGE\ for\ better\ edge\ handling}}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00037}00037\ \ \ \ \ glTexParameteri(GL\_TEXTURE\_2D,\ GL\_TEXTURE\_WRAP\_T,\ GL\_CLAMP\_TO\_EDGE);}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00038}00038\ }
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00039}00039\ \ \ \ \ glBindTexture(GL\_TEXTURE\_2D,\ 0);}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00040}00040\ }
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00041}00041\ \ \ \ \ SDL\_FreeSurface(surface);}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00042}00042\ \ \ \ \ std::cout\ <<\ \textcolor{stringliteral}{"{}Texture\ loaded\ successfully\ from\ "{}}\ <<\ path\ <<\ std::endl;}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00043}00043\ \ \ \ \ \textcolor{keywordflow}{return}\ texture;}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00044}00044\ \}}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00045}00045\ }
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00046}00046\ \textcolor{keywordtype}{int}\ main(\textcolor{keywordtype}{int}\ argc,\ \textcolor{keywordtype}{char}*\ argv[])\ \{}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00047}00047\ \ \ \ \ Atlas::Setup(\textcolor{stringliteral}{"{}Atlas\ UI\ Example"{}},\ Atlas::SCREEN\_WIDTH,\ Atlas::SCREEN\_HEIGHT);}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00048}00048\ \ \ \ \ \textcolor{comment}{//\ Initialize\ the\ UI\ library}}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00049}00049\ \ \ \ \ Atlas::initOpenGL();}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00050}00050\ \ \ \ \ Atlas::setProjectionMatrix(Atlas::SCREEN\_WIDTH,\ Atlas::SCREEN\_HEIGHT);}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00051}00051\ \ \ \ \ Atlas::initOpenGLDebug();}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00052}00052\ \ \ \ \ \textcolor{comment}{//\ Load\ texture}}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00053}00053\ \ \ \ \ GLuint\ texture\ =\ loadTexture(\textcolor{stringliteral}{"{}metalPanel\_green.png"{}});}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00054}00054\ \ \ \ \ \textcolor{keywordflow}{if}\ (!texture)\ \{}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00055}00055\ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Failed\ to\ load\ texture"{}}\ <<\ std::endl;}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00056}00056\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00057}00057\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00058}00058\ }
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00059}00059\ \ \ \ \ \textcolor{keyword}{auto}\ buttonClickCallback\ =\ []()\ \{}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00060}00060\ \ \ \ \ \ \ \ \ std::cout\ <<\ \textcolor{stringliteral}{"{}Button\ Clicked!"{}}\ <<\ std::endl;}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00061}00061\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00062}00062\ }
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00063}00063\ \ \ \ \ \textcolor{comment}{//\ Create\ some\ widgets}}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00064}00064\ \ \ \ \ Atlas::createWidget(1,\ 0,\ 0,\ 400,\ 400,\ Atlas::WidgetOptions::WIDGET\_DRAGGABLE,\ \textcolor{stringliteral}{"{}metalPanel\_green.png"{}});}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00065}00065\ }
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00066}00066\ \ \ \ \ \textcolor{keyword}{auto}\ checkBox\ =\ [](\textcolor{keywordtype}{bool}\ isChecked)\ \{}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00067}00067\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (isChecked)\ \{}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00068}00068\ \ \ \ \ \ \ \ \ \ \ \ \ std::cout\ <<\ \textcolor{stringliteral}{"{}CheckBox\ is\ checked."{}}\ <<\ std::endl;}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00069}00069\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00070}00070\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00071}00071\ \ \ \ \ \ \ \ \ \ \ \ \ std::cout\ <<\ \textcolor{stringliteral}{"{}CheckBox\ is\ not\ checked."{}}\ <<\ std::endl;}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00072}00072\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00073}00073\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00074}00074\ \ \ \ \ Atlas::CheckBox(10,\ 10,\ \textcolor{keyword}{false},\ checkBox,\ \textcolor{stringliteral}{"{}Click\ me"{}});}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00075}00075\ \ \ \ \ Atlas::Text(\textcolor{stringliteral}{"{}CheckBox"{}},\ 1.0f);}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00076}00076\ }
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00077}00077\ \ \ \ \ \textcolor{keyword}{auto}\ progressBar\ =\ [](\textcolor{keywordtype}{float}\ progress)\ \{}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00078}00078\ \ \ \ \ \ \ \ \ std::cout\ <<\ \textcolor{stringliteral}{"{}Progress:\ "{}}\ <<\ progress\ <<\ std::endl;}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00079}00079\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00080}00080\ \ \ \ \ Atlas::ProgressBar(20,\ 20,\ \textcolor{keyword}{true},\ progressBar,\ 80,\ 30);}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00081}00081\ }
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00082}00082\ \ \ \ \ Atlas::endWidget();}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00083}00083\ }
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00084}00084\ \ \ \ \ \textcolor{keywordtype}{bool}\ quit\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00085}00085\ \ \ \ \ SDL\_Event\ event;}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00086}00086\ }
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00087}00087\ \ \ \ \ \textcolor{keywordflow}{while}\ (!quit)\ \{}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00088}00088\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (SDL\_PollEvent(\&event)\ !=\ 0)\ \{}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00089}00089\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (event.type\ ==\ SDL\_QUIT)\ \{}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00090}00090\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ quit\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00091}00091\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00092}00092\ \ \ \ \ \ \ \ \ \ \ \ \ Atlas::handleEvents(\&event);}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00093}00093\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00094}00094\ }
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00095}00095\ \ \ \ \ \ \ \ \ glClearColor(0.0f,\ 0.0f,\ 0.0f,\ 0.0f);}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00096}00096\ \ \ \ \ \ \ \ \ glClear(GL\_COLOR\_BUFFER\_BIT);}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00097}00097\ }
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00098}00098\ \ \ \ \ \ \ \ \ Atlas::renderUI();}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00099}00099\ }
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00100}00100\ \ \ \ \ \ \ \ \ SDL\_GL\_SwapWindow(Atlas::g\_window);}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00101}00101\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00102}00102\ }
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00103}00103\ \ \ \ \ Atlas::Shutdown();}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00104}00104\ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00105}00105\ \}}
+\DoxyCodeLine{\Hypertarget{main_8cpp_source_l00106}00106\ }
+
+\end{DoxyCode}

@@ -1,0 +1,200 @@
+\doxysection{Atlas\+::Button\+Component Struct Reference}
+\hypertarget{struct_atlas_1_1_button_component}{}\label{struct_atlas_1_1_button_component}\index{Atlas::ButtonComponent@{Atlas::ButtonComponent}}
+
+
+Inherits \mbox{\hyperlink{struct_atlas_1_1_u_i_component}{Atlas\+::\+UIComponent}}.
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{struct_atlas_1_1_button_component_af4cccc7aa3c0596a1c46cb634e67cc0a}{Button\+Component}} (const std\+::string text, float font\+Size, const std\+::string \&texture\+Path="{}"{}, std\+::function$<$ void()$>$ on\+Click=nullptr, int width=100, int height=50, Alignment alignment=Alignment\+::\+Bottom\+Center)
+\item 
+virtual void \mbox{\hyperlink{struct_atlas_1_1_button_component_a3c937165c641bb240ad4cac86bbf48c3}{Draw}} () override
+\item 
+virtual void \mbox{\hyperlink{struct_atlas_1_1_button_component_a65ed6253d745daa5792d8db65f6ffb23}{handle\+Events}} (SDL\+\_\+\+Event \texorpdfstring{$\ast$}{*}event) override
+\item 
+virtual void \mbox{\hyperlink{struct_atlas_1_1_button_component_ae00988031aff9d87a72c0dd2a1f56d2b}{update\+Position}} (float deltaX, float deltaY) override
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{struct_atlas_1_1_text_component}{Text\+Component}} \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{struct_atlas_1_1_button_component_a2f44c234a4104cd6d9dc6c62ba2ecee0}{text\+Component}} = nullptr
+\item 
+GLuint \mbox{\hyperlink{struct_atlas_1_1_button_component_a730fbd8432f0154aa9eb006d00a9940c}{texture}} = 0
+\item 
+std\+::function$<$ void()$>$ \mbox{\hyperlink{struct_atlas_1_1_button_component_a47ff65f0380e5518eccdfd07afbfabdc}{on\+Click}}
+\item 
+bool \mbox{\hyperlink{struct_atlas_1_1_button_component_a17cfbbc8b066935173921d0748049463}{has\+Texture}} = false
+\item 
+int \mbox{\hyperlink{struct_atlas_1_1_button_component_a3ee6fc612fa8d16bd65f823c5c765f4e}{width}}
+\item 
+int \mbox{\hyperlink{struct_atlas_1_1_button_component_abd2447a77c46ba54cfa809908d87f440}{height}}
+\item 
+Alignment \mbox{\hyperlink{struct_atlas_1_1_button_component_a4f27b52a7bfa14b9a027e63c61c2c7b7}{alignment}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes inherited from \mbox{\hyperlink{struct_atlas_1_1_u_i_component}{Atlas\+::\+UIComponent}}}
+\begin{DoxyCompactItemize}
+\item 
+float \mbox{\hyperlink{struct_atlas_1_1_u_i_component_a1d070d5a97c406030f4d9784e12b8a63}{x}} = 0.\+0f
+\item 
+float \mbox{\hyperlink{struct_atlas_1_1_u_i_component_a7201d4018dba0cfbf3fe3993cddec8b0}{y}} = 0.\+0f
+\item 
+int \mbox{\hyperlink{struct_atlas_1_1_u_i_component_a454294d5b76b27e2d438f0d9b260ec19}{width}} = 0
+\item 
+int \mbox{\hyperlink{struct_atlas_1_1_u_i_component_a362c74c68b5d2a7fc707f8dd7241e103}{height}} = 0
+\item 
+\mbox{\hyperlink{struct_atlas_1_1_widget}{Widget}} \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{struct_atlas_1_1_u_i_component_aae24bcc3c9cb8fa07bd523a8b390fcba}{parent}} = nullptr
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line \mbox{\hyperlink{atlas__ui3_80_8h_source_l00309}{309}} of file \mbox{\hyperlink{atlas__ui3_80_8h_source}{atlas\+\_\+ui3.\+0.\+h}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{struct_atlas_1_1_button_component_af4cccc7aa3c0596a1c46cb634e67cc0a}\label{struct_atlas_1_1_button_component_af4cccc7aa3c0596a1c46cb634e67cc0a} 
+\index{Atlas::ButtonComponent@{Atlas::ButtonComponent}!ButtonComponent@{ButtonComponent}}
+\index{ButtonComponent@{ButtonComponent}!Atlas::ButtonComponent@{Atlas::ButtonComponent}}
+\doxysubsubsection{\texorpdfstring{ButtonComponent()}{ButtonComponent()}}
+{\footnotesize\ttfamily Atlas\+::\+Button\+Component\+::\+Button\+Component (\begin{DoxyParamCaption}\item[{const std\+::string}]{text,  }\item[{float}]{font\+Size,  }\item[{const std\+::string \&}]{texture\+Path = {\ttfamily "{}"{}},  }\item[{std\+::function$<$ void()$>$}]{on\+Click = {\ttfamily nullptr},  }\item[{int}]{width = {\ttfamily 100},  }\item[{int}]{height = {\ttfamily 50},  }\item[{Alignment}]{alignment = {\ttfamily Alignment\+:\+:BottomCenter} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{atlas__ui3_80_8h_source_l00317}{317}} of file \mbox{\hyperlink{atlas__ui3_80_8h_source}{atlas\+\_\+ui3.\+0.\+h}}.
+
+\Hypertarget{struct_atlas_1_1_button_component_af0ea6b2e673f88182dc6e00efc025645}\label{struct_atlas_1_1_button_component_af0ea6b2e673f88182dc6e00efc025645} 
+\index{Atlas::ButtonComponent@{Atlas::ButtonComponent}!````~ButtonComponent@{\texorpdfstring{$\sim$}{\string~}ButtonComponent}}
+\index{````~ButtonComponent@{\texorpdfstring{$\sim$}{\string~}ButtonComponent}!Atlas::ButtonComponent@{Atlas::ButtonComponent}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}ButtonComponent()}{\string~ButtonComponent()}}
+{\footnotesize\ttfamily Atlas\+::\+Button\+Component\+::\texorpdfstring{$\sim$}{\string~}\+Button\+Component (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{atlas__ui3_80_8h_source_l00422}{422}} of file \mbox{\hyperlink{atlas__ui3_80_8h_source}{atlas\+\_\+ui3.\+0.\+h}}.
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{struct_atlas_1_1_button_component_a3c937165c641bb240ad4cac86bbf48c3}\label{struct_atlas_1_1_button_component_a3c937165c641bb240ad4cac86bbf48c3} 
+\index{Atlas::ButtonComponent@{Atlas::ButtonComponent}!Draw@{Draw}}
+\index{Draw@{Draw}!Atlas::ButtonComponent@{Atlas::ButtonComponent}}
+\doxysubsubsection{\texorpdfstring{Draw()}{Draw()}}
+{\footnotesize\ttfamily virtual void Atlas\+::\+Button\+Component\+::\+Draw (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{struct_atlas_1_1_u_i_component}{Atlas\+::\+UIComponent}}.
+
+
+
+Definition at line \mbox{\hyperlink{atlas__ui3_80_8h_source_l00347}{347}} of file \mbox{\hyperlink{atlas__ui3_80_8h_source}{atlas\+\_\+ui3.\+0.\+h}}.
+
+\Hypertarget{struct_atlas_1_1_button_component_a65ed6253d745daa5792d8db65f6ffb23}\label{struct_atlas_1_1_button_component_a65ed6253d745daa5792d8db65f6ffb23} 
+\index{Atlas::ButtonComponent@{Atlas::ButtonComponent}!handleEvents@{handleEvents}}
+\index{handleEvents@{handleEvents}!Atlas::ButtonComponent@{Atlas::ButtonComponent}}
+\doxysubsubsection{\texorpdfstring{handleEvents()}{handleEvents()}}
+{\footnotesize\ttfamily virtual void Atlas\+::\+Button\+Component\+::handle\+Events (\begin{DoxyParamCaption}\item[{SDL\+\_\+\+Event \texorpdfstring{$\ast$}{*}}]{event }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{struct_atlas_1_1_u_i_component}{Atlas\+::\+UIComponent}}.
+
+
+
+Definition at line \mbox{\hyperlink{atlas__ui3_80_8h_source_l00396}{396}} of file \mbox{\hyperlink{atlas__ui3_80_8h_source}{atlas\+\_\+ui3.\+0.\+h}}.
+
+\Hypertarget{struct_atlas_1_1_button_component_ae00988031aff9d87a72c0dd2a1f56d2b}\label{struct_atlas_1_1_button_component_ae00988031aff9d87a72c0dd2a1f56d2b} 
+\index{Atlas::ButtonComponent@{Atlas::ButtonComponent}!updatePosition@{updatePosition}}
+\index{updatePosition@{updatePosition}!Atlas::ButtonComponent@{Atlas::ButtonComponent}}
+\doxysubsubsection{\texorpdfstring{updatePosition()}{updatePosition()}}
+{\footnotesize\ttfamily virtual void Atlas\+::\+Button\+Component\+::update\+Position (\begin{DoxyParamCaption}\item[{float}]{deltaX,  }\item[{float}]{deltaY }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{struct_atlas_1_1_u_i_component}{Atlas\+::\+UIComponent}}.
+
+
+
+Definition at line \mbox{\hyperlink{atlas__ui3_80_8h_source_l00412}{412}} of file \mbox{\hyperlink{atlas__ui3_80_8h_source}{atlas\+\_\+ui3.\+0.\+h}}.
+
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{struct_atlas_1_1_button_component_a4f27b52a7bfa14b9a027e63c61c2c7b7}\label{struct_atlas_1_1_button_component_a4f27b52a7bfa14b9a027e63c61c2c7b7} 
+\index{Atlas::ButtonComponent@{Atlas::ButtonComponent}!alignment@{alignment}}
+\index{alignment@{alignment}!Atlas::ButtonComponent@{Atlas::ButtonComponent}}
+\doxysubsubsection{\texorpdfstring{alignment}{alignment}}
+{\footnotesize\ttfamily Alignment Atlas\+::\+Button\+Component\+::alignment}
+
+
+
+Definition at line \mbox{\hyperlink{atlas__ui3_80_8h_source_l00316}{316}} of file \mbox{\hyperlink{atlas__ui3_80_8h_source}{atlas\+\_\+ui3.\+0.\+h}}.
+
+\Hypertarget{struct_atlas_1_1_button_component_a17cfbbc8b066935173921d0748049463}\label{struct_atlas_1_1_button_component_a17cfbbc8b066935173921d0748049463} 
+\index{Atlas::ButtonComponent@{Atlas::ButtonComponent}!hasTexture@{hasTexture}}
+\index{hasTexture@{hasTexture}!Atlas::ButtonComponent@{Atlas::ButtonComponent}}
+\doxysubsubsection{\texorpdfstring{hasTexture}{hasTexture}}
+{\footnotesize\ttfamily bool Atlas\+::\+Button\+Component\+::has\+Texture = false}
+
+
+
+Definition at line \mbox{\hyperlink{atlas__ui3_80_8h_source_l00313}{313}} of file \mbox{\hyperlink{atlas__ui3_80_8h_source}{atlas\+\_\+ui3.\+0.\+h}}.
+
+\Hypertarget{struct_atlas_1_1_button_component_abd2447a77c46ba54cfa809908d87f440}\label{struct_atlas_1_1_button_component_abd2447a77c46ba54cfa809908d87f440} 
+\index{Atlas::ButtonComponent@{Atlas::ButtonComponent}!height@{height}}
+\index{height@{height}!Atlas::ButtonComponent@{Atlas::ButtonComponent}}
+\doxysubsubsection{\texorpdfstring{height}{height}}
+{\footnotesize\ttfamily int Atlas\+::\+Button\+Component\+::height}
+
+
+
+Definition at line \mbox{\hyperlink{atlas__ui3_80_8h_source_l00315}{315}} of file \mbox{\hyperlink{atlas__ui3_80_8h_source}{atlas\+\_\+ui3.\+0.\+h}}.
+
+\Hypertarget{struct_atlas_1_1_button_component_a47ff65f0380e5518eccdfd07afbfabdc}\label{struct_atlas_1_1_button_component_a47ff65f0380e5518eccdfd07afbfabdc} 
+\index{Atlas::ButtonComponent@{Atlas::ButtonComponent}!onClick@{onClick}}
+\index{onClick@{onClick}!Atlas::ButtonComponent@{Atlas::ButtonComponent}}
+\doxysubsubsection{\texorpdfstring{onClick}{onClick}}
+{\footnotesize\ttfamily std\+::function$<$void()$>$ Atlas\+::\+Button\+Component\+::on\+Click}
+
+
+
+Definition at line \mbox{\hyperlink{atlas__ui3_80_8h_source_l00312}{312}} of file \mbox{\hyperlink{atlas__ui3_80_8h_source}{atlas\+\_\+ui3.\+0.\+h}}.
+
+\Hypertarget{struct_atlas_1_1_button_component_a2f44c234a4104cd6d9dc6c62ba2ecee0}\label{struct_atlas_1_1_button_component_a2f44c234a4104cd6d9dc6c62ba2ecee0} 
+\index{Atlas::ButtonComponent@{Atlas::ButtonComponent}!textComponent@{textComponent}}
+\index{textComponent@{textComponent}!Atlas::ButtonComponent@{Atlas::ButtonComponent}}
+\doxysubsubsection{\texorpdfstring{textComponent}{textComponent}}
+{\footnotesize\ttfamily \mbox{\hyperlink{struct_atlas_1_1_text_component}{Text\+Component}}\texorpdfstring{$\ast$}{*} Atlas\+::\+Button\+Component\+::text\+Component = nullptr}
+
+
+
+Definition at line \mbox{\hyperlink{atlas__ui3_80_8h_source_l00310}{310}} of file \mbox{\hyperlink{atlas__ui3_80_8h_source}{atlas\+\_\+ui3.\+0.\+h}}.
+
+\Hypertarget{struct_atlas_1_1_button_component_a730fbd8432f0154aa9eb006d00a9940c}\label{struct_atlas_1_1_button_component_a730fbd8432f0154aa9eb006d00a9940c} 
+\index{Atlas::ButtonComponent@{Atlas::ButtonComponent}!texture@{texture}}
+\index{texture@{texture}!Atlas::ButtonComponent@{Atlas::ButtonComponent}}
+\doxysubsubsection{\texorpdfstring{texture}{texture}}
+{\footnotesize\ttfamily GLuint Atlas\+::\+Button\+Component\+::texture = 0}
+
+
+
+Definition at line \mbox{\hyperlink{atlas__ui3_80_8h_source_l00311}{311}} of file \mbox{\hyperlink{atlas__ui3_80_8h_source}{atlas\+\_\+ui3.\+0.\+h}}.
+
+\Hypertarget{struct_atlas_1_1_button_component_a3ee6fc612fa8d16bd65f823c5c765f4e}\label{struct_atlas_1_1_button_component_a3ee6fc612fa8d16bd65f823c5c765f4e} 
+\index{Atlas::ButtonComponent@{Atlas::ButtonComponent}!width@{width}}
+\index{width@{width}!Atlas::ButtonComponent@{Atlas::ButtonComponent}}
+\doxysubsubsection{\texorpdfstring{width}{width}}
+{\footnotesize\ttfamily int Atlas\+::\+Button\+Component\+::width}
+
+
+
+Definition at line \mbox{\hyperlink{atlas__ui3_80_8h_source_l00314}{314}} of file \mbox{\hyperlink{atlas__ui3_80_8h_source}{atlas\+\_\+ui3.\+0.\+h}}.
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Users/tivoi/source/repos/\+Shine\+Ville UI Library/atlas\+\_\+ui3.\+0.\+h\end{DoxyCompactItemize}
