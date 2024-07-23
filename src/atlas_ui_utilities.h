@@ -1,5 +1,4 @@
 #pragma once
-
 //////////////////////////////////////////////////////////
 ////////////SV UI UTILITIES MUST BE INCLUDED IN SV_UI3.0//
 //////////////////////////////////////////////////////////
@@ -22,69 +21,7 @@ namespace Atlas {
     SDL_Window* g_window = nullptr;
     SDL_GLContext g_context = nullptr;
 
-    bool initSDL(SDL_Window*& window, SDL_GLContext& context, const std::string& windowName, int windowWidth, int windowHeight) {
-        if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-            std::cerr << "Failed to initialize SDL: " << SDL_GetError() << std::endl;
-            return false;
-        }
-        if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
-            std::cerr << "Failed to initialize SDL_image: " << IMG_GetError() << std::endl;
-            return false;
-        }
-        if (TTF_Init() == -1) {
-            std::cerr << "TTF_Init: " << TTF_GetError() << std::endl;
-            return false;
-        }
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-
-        window = SDL_CreateWindow(windowName.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowWidth, windowHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
-        if (!window) {
-            std::cerr << "Failed to create window: " << SDL_GetError() << std::endl;
-            return false;
-        }
-
-        context = SDL_GL_CreateContext(window);
-        if (!context) {
-            std::cerr << "Failed to create OpenGL context: " << SDL_GetError() << std::endl;
-            return false;
-        }
-
-        if (SDL_GL_SetSwapInterval(1) < 0) {
-            std::cerr << "Failed to set VSync: " << SDL_GetError() << std::endl;
-            return false;
-        }
-
-        glewExperimental = GL_TRUE;
-        GLenum err = glewInit();
-        if (err != GLEW_OK) {
-            std::cerr << "GLEW initialization error: " << glewGetErrorString(err) << std::endl;
-            return false;
-        }
-
-        glViewport(0, 0, windowWidth, windowHeight);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-        return true;
-    }
-
-    void closeSDL(SDL_Window* window, SDL_GLContext context) {
-        SDL_GL_DeleteContext(context);
-        SDL_DestroyWindow(window);
-        SDL_Quit();
-    }
-
-    void debugOpenGL() {
-        GLenum err;
-        while ((err = glGetError()) != GL_NO_ERROR) {
-            std::cerr << "OpenGL error: " << err << std::endl;
-        }
-    }
-
-    // New Setup function
-   // Modified Setup function to use global variables
+    // Streamlined Setup function
     bool Setup(const std::string& windowName, int windowWidth = SCREEN_WIDTH, int windowHeight = SCREEN_HEIGHT) {
         if (SDL_Init(SDL_INIT_VIDEO) < 0) {
             std::cerr << "Failed to initialize SDL: " << SDL_GetError() << std::endl;
@@ -102,12 +39,12 @@ namespace Atlas {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
-        g_window = SDL_CreateWindow(windowName.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowWidth, windowHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+        g_window = SDL_CreateWindow(windowName.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowWidth, windowHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
         if (!g_window) {
             std::cerr << "Failed to create window: " << SDL_GetError() << std::endl;
             return false;
         }
-
+        //SDL_SetWindowFullscreen(g_window, SDL_WINDOW_FULLSCREEN);
         g_context = SDL_GL_CreateContext(g_window);
         if (!g_context) {
             std::cerr << "Failed to create OpenGL context: " << SDL_GetError() << std::endl;
@@ -126,13 +63,16 @@ namespace Atlas {
             return false;
         }
 
-        glViewport(0, 0, windowWidth, windowHeight);
+        int actualWidth, actualHeight;
+        SDL_GetWindowSize(g_window, &actualWidth, &actualHeight);
+
+        glViewport(0, 0, actualWidth, actualHeight);
+        
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         return true;
-}
-
+    }
 
     void Shutdown() {
         if (g_context) {
@@ -148,6 +88,7 @@ namespace Atlas {
         SDL_Quit();
     }
 #endif
+
 
 
 
@@ -313,17 +254,63 @@ namespace Atlas {
 
             Log(debugMessage, level);
         }
+
+        
+       
+        
+    
     };
-
-
-
 
 #endif
 
+    ////////////////////////////////////////////////////////////////
+    /////////////////TEXTURE LOADING///////////////////////////////
+    ///////////////////////////////////////////////////////////////
+// Define a struct to hold texture information
+    struct TextureInfo {
+        GLuint id;
+        int width;
+        int height;
+    };
+
+    // Update the loadTexture function to return TextureInfo
+    TextureInfo loadTexture(const char* path) {
+        SDL_Surface* surface = IMG_Load(path);
+        if (!surface) {
+            std::cerr << "Failed to load texture: " << IMG_GetError() << std::endl;
+            return { 0, 0, 0 }; // Return an empty texture info on failure
+        }
+
+        GLuint texture;
+        glGenTextures(1, &texture);
+        glBindTexture(GL_TEXTURE_2D, texture);
+
+        GLenum format;
+        if (surface->format->BytesPerPixel == 4) {
+            format = surface->format->Rmask == 0x000000ff ? GL_RGBA : GL_BGRA;
+        }
+        else {
+            format = surface->format->Rmask == 0x000000ff ? GL_RGB : GL_BGR;
+        }
+
+        glTexImage2D(GL_TEXTURE_2D, 0, format == GL_RGBA ? GL_RGBA : GL_RGB, surface->w, surface->h, 0, format, GL_UNSIGNED_BYTE, surface->pixels);
+        glGenerateMipmap(GL_TEXTURE_2D);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+        TextureInfo textureInfo = { texture, surface->w, surface->h };
+        SDL_FreeSurface(surface);
+        std::cout << "Texture loaded successfully from " << path << std::endl;
+        return textureInfo;
+    }
+
+   
+
+   
+	
 
 
-
-
-
-
-}
+};

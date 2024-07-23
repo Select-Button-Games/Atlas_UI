@@ -1,7 +1,22 @@
+
+#define SDL_MAIN_HANDLED
+#include <SDL.h>
 #include <iostream>
 #define SETUP_SDL_OPENGL
 #include "atlas_ui3.0.h"
 #include "atlas_ui_utilities.h"
+#pragma comment(linker,"/ENTRY:mainCRTStartup")
+
+#include "atlas_ui_shapes.h"
+#include <unordered_map>
+bool isshown;
+
+std::unordered_map<int, int> widgetOptions;
+
+void setWidgetOptions(int widgetID, Atlas::WidgetOptions options)
+{
+    widgetOptions[widgetID] = options;
+}
 
 GLuint loadTexture(const char* path) {
     SDL_Surface* surface = IMG_Load(path); // Use IMG_Load instead of SDL_LoadBMP
@@ -43,73 +58,87 @@ GLuint loadTexture(const char* path) {
     return texture;
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[])
+{
     Atlas::Setup("Atlas UI Example", Atlas::SCREEN_WIDTH, Atlas::SCREEN_HEIGHT);
     // Initialize the UI library
     Atlas::initOpenGL();
     Atlas::setProjectionMatrix(Atlas::SCREEN_WIDTH, Atlas::SCREEN_HEIGHT);
     Atlas::initOpenGLDebug();
-    // Load texture
-    GLuint texture = loadTexture("metalPanel_green.png");
-    if (!texture) {
-        std::cerr << "Failed to load texture" << std::endl;
-        return -1;
-    }
+   
 
-    // Parent widget to hold checkboxes and labels
-    Atlas::createWidget(1, 0, 0, 400, 300, Atlas::WidgetOptions::WIDGET_DRAGGABLE, "metalPanel_green.png");
+    // Parent widget to hold new UI elements
+    //Atlas::createWidget(1, 0, 0, Atlas::SCREEN_WIDTH, Atlas::SCREEN_HEIGHT, Atlas::WidgetOptions::WIDGET_DRAGGABLE," ");
+    /**
+    // Assuming the widget's dimensions are 600x300
+    int widgetWidth = 600;
+    int widgetHeight = 300;
 
-    // First checkbox and label
-    Atlas::Text("Enable Feature A", 1.0f, 60, 20);
-    auto featureACallback = [](bool isChecked) {
-        std::cout << "Feature A is " << (isChecked ? "enabled" : "disabled") << "." << std::endl;
+    // Central alignment and spacing
+    int centerX = widgetWidth / 2;
+    int startY = 100; // Starting Y position for the first element
+    int verticalSpacing = 70; // Space between elements
+
+    // Username label and text input
+    Atlas::Text("Username", 1.0f, centerX - 100, startY); // Adjust X position as needed for label
+    auto usernameCallback = [](const std::string& text) {
+        std::cout << "Username entered: " << text << std::endl;
         };
-    Atlas::CheckBox(60, 40, false, featureACallback, "Feature A");
+    Atlas::TextInput(centerX - 100, startY + 20, 200, 30, usernameCallback, "", Atlas::WidgetOptions::WIDGET_NONE);
 
-    // Second checkbox and label
-    Atlas::Text("Enable Feature B", 1.0f, 60, 70);
-    auto featureBCallback = [](bool isChecked) {
-        std::cout << "Feature B is " << (isChecked ? "enabled" : "disabled") << "." << std::endl;
+    // Password label and text input
+    Atlas::Text("Password", 1.0f, centerX - 100, startY + verticalSpacing); // Adjust X position as needed for label
+    auto passwordCallback = [](const std::string& text) {
+        std::cout << "Password entered: " << text << std::endl;
         };
-    Atlas::CheckBox(60, 90, false, featureBCallback, "Feature B");
+    Atlas::TextInput(centerX - 100, startY + verticalSpacing + 20, 200, 30, passwordCallback, "", Atlas::WidgetOptions::WIDGET_PASSWORD);
 
-    // Third checkbox and label
-    Atlas::Text("Enable Feature C", 1.0f, 60, 120);
-    auto featureCCallback = [](bool isChecked) {
-        std::cout << "Feature C is " << (isChecked ? "enabled" : "disabled") << "." << std::endl;
+    // Login button
+    auto loginCallback = []() {
+        std::cout << "Login button clicked." << std::endl;
         };
-    Atlas::CheckBox(60, 140, false, featureCCallback, "Feature C");
-
-    std::string detectedUrl = ""; // Global or member variable to store the detected URL
-
-    auto textBox = [](const std::string& text) {
-        std::cout << "Text entered: " << text << std::endl;
-
-    
-        };
-    //UI BUTTON
-    Atlas::TextInput(60, 200, 200, 30, textBox, "Test", Atlas::WidgetOptions::WIDGET_PASSWORD);
-
-
-    // Close the parent widget
+    Atlas::Button("        Login", 1.0f, "UI/Btn_v02.png", loginCallback, 150, 29, centerX - 75, startY + 2 * verticalSpacing);
+    **/
+   
+    Atlas::createWidget(1, 0, 0, 400, 400, Atlas::WidgetOptions::WIDGET_SHOWN, "");
+    Atlas::Text("Hello World", 1.0f, 100, 100);
     Atlas::endWidget();
-
+ 
     bool quit = false;
     SDL_Event event;
-
+    
     while (!quit) {
         while (SDL_PollEvent(&event) != 0) {
             if (event.type == SDL_QUIT) {
                 quit = true;
             }
-            Atlas::handleEvents(&event);
-        }
 
+            Atlas::handleEvents(&event);
+            if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED) {
+                int newWidth = event.window.data1;
+                int newHeight = event.window.data2;
+
+                // Assuming you have access to an instance of the class or namespace where setProjectionMatrix is defined
+                Atlas::setProjectionMatrix(newWidth, newHeight);
+
+                glViewport(0, 0, newWidth, newHeight);
+            }
+            
+        }
+    
+     
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        Atlas::renderUI();
+        if (isshown)
+        {
+            Atlas::renderUI();
+            }
+    
 
+
+        Atlas::renderUI();
+        
         SDL_GL_SwapWindow(Atlas::g_window);
     }
 
