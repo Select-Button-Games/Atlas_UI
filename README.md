@@ -153,3 +153,42 @@ int main(int argc, char* argv[])
 ```
 
 ![image](https://github.com/user-attachments/assets/a0d48382-b62a-4ca6-b810-5ca24c6d7c71)
+
+# Using in your project
+
+Currrently Atlas UI can be easily added to your project it only has a few dependencies: SDL2 and OpenGL3. All you need to do to use it in your project is clone the repo of this github
+
+```
+git clone https://github.com/Select-Button-Games/Atlas_UI
+```
+
+Once you have cloned it simply add the two header files atlas_ui3.0.h and atlas_ui_uitilites.h to your project, make sure you are linking SDL2 and OpenGL3 to ensure it will function properly. 
+
+Atlas UI can handle the creation of your window for you by simply using 
+
+```cpp
+#define SETUP_SDL_OPENGL
+#include "atlas_ui3.0.h"
+#include "atlas_ui_utilities.h"
+
+int main //psudo code
+{
+   Atlas::Setup("Atlas UI Example", Atlas::SCREEN_WIDTH, Atlas::SCREEN_HEIGHT);
+ // Initialize the UI library
+ Atlas::initOpenGL();
+ Atlas::setProjectionMatrix(Atlas::SCREEN_WIDTH, Atlas::SCREEN_HEIGHT);
+
+
+}
+```
+This will create the SDL window for you, and create the OpenGL context for you as well. 
+
+# License 
+Atlas UI is currently being released with no license and no gurantee. I would appreciate credits, but it is not nessicary. 
+
+# BUGS 
+Please inform me of any bugs you find and possible changes if you know of a fix you can email me at ajax@selectbuttongames.com 
+
+# Community 
+You can join our community where I am developing a 2D Isometric MMORPG called Shine Ville <p>
+https://discord.gg/GcFdMrxmZy
