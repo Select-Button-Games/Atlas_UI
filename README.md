@@ -1,6 +1,35 @@
 # Atlas_UI
 Atlas Game Engine UI Library(public release)
 
+# UPDATE TO v3.1
+
+1- Atlas_Text - modular text rendering using FreeType and OpenGL to allow for your own fonts 
+useage 
+```cpp
+#include "atlas_text.h" //make sure to include as this is needed to render text in atlas_ui3.0.h
+
+int main...
+//start up like normal
+ Atlas::Setup("Atlas UI Example", Atlas::SCREEN_WIDTH, Atlas::SCREEN_HEIGHT);
+ Atlas::initOpenGL();
+ Atlas::setProjectionMatrix(Atlas::SCREEN_WIDTH, Atlas::SCREEN_HEIGHT);
+ Atlas::TextRenderer::SetGlobalFont("C:/Windows/Fonts/arial.ttf"); //add this to declare what font you are wanting to use
+```
+
+2- Labels added labels for better use of text instead of using Atlas::Text use Atlas::Label
+```cpp
+Atlas::Label(x,y,"string",fontsize,height, width); 
+```
+
+3- Updated most of the UI to use atlas_text.h directly instead of using outdated code from glText 
+
+4 - Added a file browser for the use of file loading etc. 
+```cpp
+Atlas::File(50, 100, 800, 600, "C:/Windows", nullptr, 16.0f);
+```
+This will gather directories from C/Windows and allow you to see what is inside these directories. 
+# Still a work in progress!! 
+
 # Documentation
 https://select-button-games.github.io/Atlas_UI/
 
@@ -153,6 +182,8 @@ int main(int argc, char* argv[])
 ```
 
 ![image](https://github.com/user-attachments/assets/a0d48382-b62a-4ca6-b810-5ca24c6d7c71)
+![image](https://github.com/user-attachments/assets/d8a8e22b-f1d3-41a2-82c7-a26e9737c6c2)
+
 
 # Using in your project
 
