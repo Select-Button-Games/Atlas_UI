@@ -4,22 +4,31 @@
 //////////////////////////////////////////////////////////
 #define APIENTRY GLAPIENTRY
 #include <GL/glew.h>
+#include <GL/glu.h> // Include GLU header
 #include <iostream>
 
-
 namespace Atlas {
-
+    GLuint shaderProgram; // shader program declaration
+   
+    GLuint VAO, VBO, EBO; // VAO, VBO, EBO declaration 
+    glm::mat4 projection; // Declaration without initialization
+    
+    
+    
     ///////////////////////////////////////////////////////////////
     //////////////////SETUP SDL2 AND OPENGL CALLS FOR SV_UI////////
     ///////////////////OPTIONAL AS YOU CAN SETUP YOUR OWN CALLS/////
     ////////////////////////////////////////////////////////////////
 
 #ifdef SETUP_SDL_OPENGL
-    const int SCREEN_WIDTH = 1800;
-    const int SCREEN_HEIGHT = 900;
+    int SCREEN_WIDTH = 1800;
+    int SCREEN_HEIGHT = 900;
 
     SDL_Window* g_window = nullptr;
     SDL_GLContext g_context = nullptr;
+
+    // Add SDL_Renderer declaration
+    SDL_Renderer* g_renderer = nullptr;
 
     // Streamlined Setup function
     bool Setup(const std::string& windowName, int windowWidth = SCREEN_WIDTH, int windowHeight = SCREEN_HEIGHT) {
@@ -67,7 +76,7 @@ namespace Atlas {
         SDL_GetWindowSize(g_window, &actualWidth, &actualHeight);
 
         glViewport(0, 0, actualWidth, actualHeight);
-        
+
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -75,6 +84,10 @@ namespace Atlas {
     }
 
     void Shutdown() {
+        if (g_renderer) {
+            SDL_DestroyRenderer(g_renderer);
+            g_renderer = nullptr;
+        }
         if (g_context) {
             SDL_GL_DeleteContext(g_context);
             g_context = nullptr;
@@ -87,7 +100,15 @@ namespace Atlas {
         TTF_Quit();
         SDL_Quit();
     }
+
+    //getter function to get the SDL_Renderer
+    SDL_Renderer* GetRenderer() {
+        return g_renderer;
+    }
 #endif
+
+
+
 
 
 
@@ -97,21 +118,25 @@ namespace Atlas {
     ////////////OPENGL DEBUG STUFF////////////////////
     ///////////////////////////////////////////////////
     void checkOpenGLError(const char* stmt, const char* fname, int line) {
-        GLenum err = glGetError();
-        while (err != GL_NO_ERROR) {
-            std::cerr << "OpenGL error " << err << " at " << fname << ":" << line << " - for " << stmt << std::endl;
-            err = glGetError(); // To catch multiple errors
+        GLenum err;
+        while ((err = glGetError()) != GL_NO_ERROR) {
+            const char* error;
+            switch (err) {
+            case GL_INVALID_OPERATION:      error = "INVALID_OPERATION";      break;
+            case GL_INVALID_ENUM:           error = "INVALID_ENUM";           break;
+            case GL_INVALID_VALUE:          error = "INVALID_VALUE";          break;
+            case GL_OUT_OF_MEMORY:          error = "OUT_OF_MEMORY";          break;
+            case GL_INVALID_FRAMEBUFFER_OPERATION:  error = "INVALID_FRAMEBUFFER_OPERATION";  break;
+            default:                        error = "UNKNOWN_ERROR";          break;
+            }
+            std::cerr << "OpenGL error (" << error << ") " << " at " << fname << ":" << line << " - for " << stmt << std::endl;
         }
     }
 
-    // Macro to wrap OpenGL calls
 #define GL_CHECK(stmt) do { \
-        stmt; \
-        GLenum err = glGetError(); \
-        if (err != GL_NO_ERROR) { \
-            std::cerr << "OpenGL error " << err << " at " << __FILE__ << ":" << __LINE__ << " - for " << #stmt << std::endl; \
-        } \
-    } while (0)
+    stmt; \
+    checkGLError(#stmt, __FILE__, __LINE__); \
+} while (0)
     // Callback function for debugging
     void APIENTRY glDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {
         // Ignore non-significant error/warning codes
@@ -157,7 +182,19 @@ namespace Atlas {
             glEnable(GL_DEBUG_OUTPUT);
             glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
             glDebugMessageCallback(static_cast<GLDEBUGPROC>(glDebugOutput), nullptr); // Cast to GLDEBUGPROC
-            // Other setup remains the same...
+            
+            glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
+
+            std::cout << "OpenGL debug output initialized" << std::endl;
+
+
+        }
+    }
+    void checkGLError(const char* stmt, const char* fname, int line) {
+        GLenum err = glGetError();
+        if (err != GL_NO_ERROR) {
+            std::cerr << "OpenGL error " << err << ", at " << fname << ":" << line << " - for " << stmt << std::endl;
+            exit(1);
         }
     }
 

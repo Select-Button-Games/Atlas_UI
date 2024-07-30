@@ -15,30 +15,32 @@
 #include <functional>
 #include <string>
 #include <algorithm>
-#define GLT_IMPLEMENTATION
-#include "gltext.h"
 #include <algorithm>
 #include <functional>
 #include <string>
 #include "atlas_ui_utilities.h"
+#include "atlas_text.h"
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 namespace Atlas {
 
 
-    GLuint shaderProgram;
-    GLuint VAO, VBO, EBO;
-    glm::mat4 projection; // Declaration without initialization
+  
+   
 
     void setProjectionMatrix(int screenWidth, int screenHeight) {
-       
-        
-        projection = glm::ortho(0.0f, static_cast<float>(screenWidth), static_cast<float>(screenHeight), 0.0f, -1.0f, 1.0f);
+        projection = glm::ortho(0.0f, static_cast<float>(screenWidth), static_cast<float>(screenHeight), 0.0f);
+        glUseProgram(shaderProgram);
+        glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
     }
 
 
     struct Widget; // Forward declaration
     struct TextRenderer; // Ensure this is forward-declared if its full definition comes later
     struct TextComponent;
+    
     struct UIComponent {
         float x = 0.0f, y = 0.0f; // Initialized
         int width = 0, height = 0; // Initialized
@@ -70,8 +72,11 @@ namespace Atlas {
         bool isActive = true;
         bool isCloseable = false;
         bool isVisable = true;
+
         glm::vec4 color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f); //default color
         
+       
+
         void setColor(float r, float g, float b, float a)
         {
             color = glm::vec4(r, g, b, a);
@@ -82,6 +87,8 @@ namespace Atlas {
             for (auto& component : components) {
                 delete component;
             }
+
+            
         }
     };
 
@@ -179,42 +186,50 @@ namespace Atlas {
     }
 
 
-
-    // Shader compilation and linking utility functions
-    GLuint compileShader(const char* source, GLenum shaderType) {
-        GLuint shader = glCreateShader(shaderType);
-        glShaderSource(shader, 1, &source, nullptr);
-        glCompileShader(shader);
-
+    void checkShaderCompileErrors(GLuint shader, const std::string& type) {
         GLint success;
-        glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-        if (!success) {
-            char infoLog[512];
-            glGetShaderInfoLog(shader, 512, nullptr, infoLog);
-            std::cerr << "Shader compilation failed: " << infoLog << std::endl;
-            return 0;
+        GLchar infoLog[1024];
+        if (type != "PROGRAM") {
+            glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+            if (!success) {
+                glGetShaderInfoLog(shader, 1024, NULL, infoLog);
+                std::cerr << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+            }
+            else {
+                std::cout << "Shader compiled successfully" << std::endl;
+            }
         }
+        else {
+            glGetProgramiv(shader, GL_LINK_STATUS, &success);
+            if (!success) {
+                glGetProgramInfoLog(shader, 1024, NULL, infoLog);
+                std::cerr << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+            }
+            else {
+                std::cout << "Shader program linked successfully" << std::endl;
+            }
+        }
+    }
 
+    // Function to compile a shader
+    GLuint compileShader(const char* shaderSource, GLenum shaderType) {
+        GLuint shader = glCreateShader(shaderType);
+        glShaderSource(shader, 1, &shaderSource, NULL);
+        glCompileShader(shader);
+        checkShaderCompileErrors(shader, shaderType == GL_VERTEX_SHADER ? "VERTEX" : "FRAGMENT");
         return shader;
     }
 
-    GLuint createShaderProgram(const char* vertexSource, const char* fragmentSource) {
-        GLuint vertexShader = compileShader(vertexSource, GL_VERTEX_SHADER);
-        GLuint fragmentShader = compileShader(fragmentSource, GL_FRAGMENT_SHADER);
+    // Function to create a shader program
+    GLuint createShaderProgram(const char* vertexShaderSource, const char* fragmentShaderSource) {
+        GLuint vertexShader = compileShader(vertexShaderSource, GL_VERTEX_SHADER);
+        GLuint fragmentShader = compileShader(fragmentShaderSource, GL_FRAGMENT_SHADER);
 
         GLuint shaderProgram = glCreateProgram();
         glAttachShader(shaderProgram, vertexShader);
         glAttachShader(shaderProgram, fragmentShader);
         glLinkProgram(shaderProgram);
-
-        GLint success;
-        glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-        if (!success) {
-            char infoLog[512];
-            glGetProgramInfoLog(shaderProgram, 512, nullptr, infoLog);
-            std::cerr << "Shader linking failed: " << infoLog << std::endl;
-            return 0;
-        }
+        checkShaderCompileErrors(shaderProgram, "PROGRAM");
 
         glDeleteShader(vertexShader);
         glDeleteShader(fragmentShader);
@@ -222,7 +237,9 @@ namespace Atlas {
         return shaderProgram;
     }
 
-    // Vertex and Fragment shader sources
+  
+
+
     const char* vertexShaderSource = R"(
 #version 330 core
 layout(location = 0) in vec2 aPos;
@@ -263,6 +280,10 @@ void main()
     }
 )";
 
+
+
+
+
     // Initialize shader program and VAO, VBO
 
 
@@ -270,7 +291,8 @@ void main()
         glewInit();
 
         shaderProgram = createShaderProgram(vertexShaderSource, fragmentShaderSource);
-        gltInit();
+     
+        
         float vertices[] = {
             // positions    // texture coords
             0.0f,  1.0f,    0.0f, 1.0f,
@@ -302,6 +324,7 @@ void main()
         glEnableVertexAttribArray(1);
 
 
+        glDisable(GL_DEPTH_TEST);
 
     }
 
@@ -312,42 +335,27 @@ void main()
     struct TextComponent : public UIComponent {
         std::string text;
         float fontSize;
-        GLTtext* gltText;
-        int x;
-        int y;
+        TextRenderer* textRenderer;
+        glm::vec3 color;
 
-        // Updated constructor to include x and y parameters
-        TextComponent(const std::string& text, float fontSize, int x = 0, int y = 0)
-            : UIComponent(), text(text), fontSize(fontSize), x(x), y(y) {
-
-            gltText = gltCreateText();
-            if (gltText == nullptr) {
-                throw std::runtime_error("Failed to create text");
-            }
+        TextComponent(const std::string& text, float fontSize, float x = 0.0f, float y = 0.0f, glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f))
+            : UIComponent(), text(text), fontSize(fontSize), color(color) {
+            this->x = x;
+            this->y = y;
+            textRenderer = new TextRenderer(fontSize);
         }
 
         virtual void Draw() override {
-            if (!gltText) {
-                gltText = gltCreateText();
+            if (textRenderer) {
+                float globalX = x;
+                float globalY = y;
+                if (parent) {
+                    globalX += parent->x;
+                    globalY += parent->y;
+                }
+                textRenderer->RenderText(text, globalX, globalY, 1.0f, color);
             }
-
-            gltSetText(gltText, text.c_str());
-            gltBeginDraw();
-
-            // Calculate global coordinates as offsets from the widget's position
-            float globalX = x; // Use x as an offset from the widget's x position
-            float globalY = y; // Use y as an offset from the widget's y position
-
-            // Set color (example: white)
-            gltColor(1.0f, 1.0f, 1.0f, 1.0f);
-
-            // Draw the text at the calculated global position
-            gltDrawText2DAligned(gltText, globalX, globalY, fontSize, GLT_LEFT, GLT_TOP);
-
-            gltEndDraw();
         }
-
-
 
         virtual void handleEvents(SDL_Event* event) override {
             // Handle events for text component if needed
@@ -357,22 +365,22 @@ void main()
             x += deltaX;
             y += deltaY;
         }
+
         void setText(const std::string& newText) {
             text = newText;
-            gltSetText(gltText, text.c_str()); // Update the GLText instance
         }
+
         ~TextComponent() {
-            gltDeleteText(gltText);
-            gltTerminate();
+            delete textRenderer;
         }
     };
+
 
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////BUTTON COMPONENT OF WIDGETS///////////////////////////////
     // //////////////////////////////////////////////////////////////////////////////////////
     struct ButtonComponent : public UIComponent {
-        TextComponent* textComponent = nullptr;
         GLuint texture = 0;
         std::function<void()> onClick;
         bool hasTexture = false; // New flag to indicate if the button has a texture
@@ -380,16 +388,22 @@ void main()
         int height;
         int x;
         int y;
-        Alignment alignment;
-        ButtonComponent(const std::string text, float fontSize, const std::string& texturePath = "", std::function<void()> onClick = nullptr, int width = 100, int height = 50, int x = 0, int y = 0)
-            : onClick(onClick), alignment(alignment) {
+        std::string text;
+        float fontSize;
+        glm::vec3 textColor;
+        glm::vec4 buttonColor = glm::vec4(0.5f, 0.5f, 0.5f,0.5f); // Default button color
+        TextRenderer* textRenderer;
+        bool isHovered;
+
+        ButtonComponent(const std::string& text, float fontSize, const std::string& texturePath = "", std::function<void()> onClick = nullptr, int width = 100, int height = 50, int x = 0, int y = 0, glm::vec3 textColor = glm::vec3(1.0f, 1.0f, 1.0f))
+            : onClick(onClick), text(text), fontSize(fontSize), textColor(textColor), isHovered(false) {
+
             this->width = width; // Set button width
             this->height = height; // Set button height
             this->x = x;
             this->y = y;
-            if (!text.empty()) {
-                textComponent = new TextComponent(text, fontSize);
-            }
+
+            textRenderer = new TextRenderer(fontSize);
 
             // Load the texture if a path is provided and it's not empty
             if (!texturePath.empty()) {
@@ -413,7 +427,7 @@ void main()
         }
 
         virtual void Draw() override {
-            //draw the button texture if it exists
+            // Draw the button texture if it exists
             if (hasTexture) {
                 glUseProgram(shaderProgram);
                 glBindVertexArray(VAO);
@@ -422,83 +436,83 @@ void main()
                 glUniform1i(glGetUniformLocation(shaderProgram, "texture1"), 0);
                 glUniform1i(glGetUniformLocation(shaderProgram, "useTexture"), 1);
 
-                glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, 0.0f));
+                float globalX = parent->x + x;
+                float globalY = parent->y + y;
+
+                glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(globalX, globalY, 0.0f));
                 model = glm::scale(model, glm::vec3(width, height, 1.0f)); // Use button's width and height
                 GLuint modelLoc = glGetUniformLocation(shaderProgram, "model");
                 glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
-                GLuint projLoc = glGetUniformLocation(shaderProgram, "projection");
-                glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-
                 glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-                glBindVertexArray(0);
-                glUseProgram(0);
-
             }
             else {
-                // Draw a basic colored square
                 glUseProgram(shaderProgram);
                 glBindVertexArray(VAO);
-                glUniform1i(glGetUniformLocation(shaderProgram, "useTexture"), 0); // Indicate not using texture
-                glUniform4f(glGetUniformLocation(shaderProgram, "fallbackColor"), 0.5f, 0.5f, 0.5f, 1.0f); // Example: Gray color
 
-                glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, 0.0f));
-                model = glm::scale(model, glm::vec3(width, height, 1.0f));
-                GLuint modelLoc = glGetUniformLocation(shaderProgram, "model");
-                glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+                // Draw the border
+                glUniform1i(glGetUniformLocation(shaderProgram, "useTexture"), 0);
+                glUniform4f(glGetUniformLocation(shaderProgram, "fallbackColor"), 0.0f, 0.0f, 0.0f, 1.0f); // Border color
 
-                GLuint projLoc = glGetUniformLocation(shaderProgram, "projection");
-                glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-
+                glm::mat4 borderModel = glm::translate(glm::mat4(1.0f), glm::vec3(parent->x + x, parent->y + y, 0.0f));
+                borderModel = glm::scale(borderModel, glm::vec3(width + 4.0f, height + 4.0f, 1.0f));
+                glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(borderModel));
                 glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-                glBindVertexArray(0);
-                glUseProgram(0);
 
+                // Draw the button itself
+                glm::vec4 buttonColor = isHovered ? glm::vec4(0.7f, 0.7f, 0.7f, 1.0f) : glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
+                glUniform4f(glGetUniformLocation(shaderProgram, "fallbackColor"), buttonColor.r, buttonColor.g, buttonColor.b, buttonColor.a);
+
+                glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(parent->x + x, parent->y + y, 0.0f));
+                model = glm::scale(model, glm::vec3(width, height, 1.0f));
+                glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
+                glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
             }
 
-            //draw text component if it exists
-            if (textComponent) {
-                textComponent->x = this->x;
-                textComponent->y = this->y;
-                textComponent->Draw();
+
+            // Draw the text directly using TextRenderer
+            if (textRenderer) {
+                float textWidth = textRenderer->GetTextWidth(text);
+                float textHeight = textRenderer->GetTextHeight(text);
+
+                // Compute text positions
+                float textX = parent->x + x + (width - textWidth) / 2.0f;  // Center horizontally
+                float textY = parent->y + y + (height + textHeight) / 2.0f;  // Center vertically, adjust for baseline
+
+                textRenderer->RenderText(text, textX, textY, 1.0f, textColor);
             }
         }
+
         virtual void handleEvents(SDL_Event* event) override {
-            // Handle click events
-            if (event->type == SDL_MOUSEBUTTONDOWN && event->button.button == SDL_BUTTON_LEFT) {
-                int mouseX = event->button.x;
-                int mouseY = event->button.y;
-                // Check if the click is within the button's bounds
-                if (mouseX > x && mouseX < x + width && mouseY > y && mouseY < y + height) {
-                    if (onClick) {
-                        onClick(); // Call the callback function
-                    }
+            int mouseX, mouseY;
+            SDL_GetMouseState(&mouseX, &mouseY);
+
+            bool wasHovered = isHovered;
+            isHovered = (mouseX > parent->x + x && mouseX < parent->x + x + width &&
+                mouseY > parent->y + y && mouseY < parent->y + y + height);
+
+            // Check for button click
+            if (wasHovered && event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_LEFT) {
+                if (onClick) {
+                    onClick(); // Call the callback function
                 }
             }
         }
+        
 
-
-        //Override the updatepos method
         virtual void updatePosition(float deltaX, float deltaY) override {
-            // First, call the base class method to update the button's position
-            x += deltaX;
-            y += deltaY;
-
-            // Then, update the position of the text component relative to the new button position
-            if (textComponent) {
-                textComponent->x = this->x;
-                textComponent->y = this->y;
-            }
+            parent->x += deltaX;
+            parent->y += deltaY;
         }
+
         ~ButtonComponent() {
-            delete textComponent; // Clean up the text component
-            if (texture) {
-                glDeleteTextures(1, &texture); // Clean up the texture
-            }
+            delete textRenderer;
         }
-
-
     };
+
+
+
+
     ///////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////LIST BOX COMPONENT//////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////
@@ -506,21 +520,18 @@ void main()
     struct ListBoxComponent : public UIComponent {
         std::vector<std::string> items; // List of items to display
         std::function<void(const std::string&)> onItemSelected; // Callback function for item selection
-        TextComponent* textComponent = nullptr;
         int selectedItemIndex = -1; // Index of the currently selected item, -1 if none
         int hoveredItemIndex = -1; // Index of the item under the mouse cursor
         int x, y;
+        int width, height;
         int scrollPosition = 0; // Tracks the current scroll position
-        int totalContentHeight = 0; // Tracks the total height of the content
-       
+        int totalContentHeight = 0; // Total height of the content
+        float fontSize;
+        TextRenderer* textRenderer; // Use TextRenderer directly
 
-
-        ListBoxComponent(const std::vector<std::string>& items, std::function<void(const std::string&)> onItemSelected = nullptr, int width = 100, int height = 150, int x = 0, int y = 0)
-            : items(items), onItemSelected(onItemSelected), x(x), y(y) {
-            this->width = width;
-            this->height = height;
-            // Instantiate textComponent here, assuming a default font size (adjust as needed)
-            textComponent = new TextComponent("", 2.0f); // Empty text initially
+        ListBoxComponent(const std::vector<std::string>& items, std::function<void(const std::string&)> onItemSelected = nullptr, int width = 100, int height = 150, int x = 0, int y = 0, float fontSize = 16.0f)
+            : items(items), onItemSelected(onItemSelected), width(width), height(height), x(x), y(y), fontSize(fontSize) {
+            textRenderer = new TextRenderer(fontSize); // Initialize TextRenderer
         }
 
         virtual void Draw() override {
@@ -529,8 +540,8 @@ void main()
                 return;
             }
 
-            if (!textComponent) {
-                std::cerr << "Text component not initialized." << std::endl;
+            if (!textRenderer) {
+                std::cerr << "Text renderer not initialized." << std::endl;
                 return;
             }
 
@@ -549,150 +560,92 @@ void main()
                 return;
             }
 
+            // Draw the border (black)
             glUniform1i(useTextureLoc, 0); // Not using texture
             glUniform4f(fallbackColorLoc, 0.0f, 0.0f, 0.0f, 1.0f); // Black border color
 
+            // Calculate border dimensions
+            float borderWidth = width + 4.0f; // Add 4 for 2 pixels border on each side
+            float borderHeight = height + 4.0f;
             glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(x - 2.0f, y - 2.0f, 0.0f));
-            model = glm::scale(model, glm::vec3(width + 4.0f, height + 4.0f, 1.0f));
+            model = glm::scale(model, glm::vec3(borderWidth, borderHeight, 1.0f));
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
             glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-
             glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
+            // Draw the background (grey)
+            glUniform4f(fallbackColorLoc, 0.7f, 0.7f, 0.7f, 1.0f); // Grey background color
             model = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, 0.0f));
             model = glm::scale(model, glm::vec3(width, height, 1.0f));
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-            glUniform4f(fallbackColorLoc, 0.8f, 0.8f, 0.8f, 1.0f); // Light grey background
-
             glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
+            // Draw each item in the list
+            float itemY = y - scrollPosition;
             for (size_t i = 0; i < items.size(); ++i) {
-                float itemX = x + (width / 2.0f);
-                float itemY = y + (i * 20.0f) + 10.0f;
-
-                if (i == hoveredItemIndex) {
-                    glUniform1i(useTextureLoc, 0); // Not using texture for the highlight
-                    glUniform4f(fallbackColorLoc, 1.0f, 1.0f, 0.0f, 1.0f); // Example: Yellow background for highlight
-
-                    glm::mat4 highlightModel = glm::translate(glm::mat4(1.0f), glm::vec3(x, itemY - 10.0f, 0.0f));
-                    highlightModel = glm::scale(highlightModel, glm::vec3(width, 20.0f, 1.0f)); // Assuming 20.0f is the item height
-                    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(highlightModel));
-
-                    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-                    glUniform4f(fallbackColorLoc, 0.8f, 0.8f, 0.8f, 1.0f); // Light grey background
+                // Skip items that are not within the visible area
+                if (itemY + fontSize < y || itemY > y + height) {
+                    itemY += fontSize + 5.0f;
+                    continue;
                 }
+
+                // Calculate the width and height of the text
+                float textWidth = textRenderer->GetTextWidth(items[i]);
+                float textHeight = textRenderer->GetTextHeight(items[i]);
+
+                // Center the text horizontally and vertically within the list box item
+                float textX = x + (width - textWidth) / 2.0f;
+                float textY = itemY + (fontSize - textHeight) / 2.0f;
+
+                glm::vec3 textColor = (i == selectedItemIndex) ? glm::vec3(1.0f, 0.0f, 0.0f) : glm::vec3(1.0f, 1.0f, 1.0f); // Red for selected, white otherwise
+                textRenderer->RenderText(items[i], textX, textY, 1.0f, textColor);
+                itemY += fontSize + 5.0f; // Adjust spacing between items
             }
-
-            // Assuming 'x', 'y', 'width', and 'height' define the dimensions of your box
-            float paddingX = 5.0f; // Horizontal padding from the box's edges
-            float paddingY = 5.0f; // Vertical padding from the box's top edge
-            float itemHeight = std::max(15.0f, textComponent->fontSize + 5.0f); // Ensure itemHeight is enough for the font size plus some spacing
-            totalContentHeight = static_cast<int>(items.size()) * 20; // Assuming each item is 20 pixels high
-           
-            
-            // Enable scissor test to clip content outside the box
-            glEnable(GL_SCISSOR_TEST);
-            glScissor(x, SCREEN_HEIGHT - (y + height), width, height);
-
-            //draw a scroll bar next to the box
-            if (totalContentHeight > height) {
-				// Calculate the scroll bar height based on the content height
-				float scrollBarHeight = (height / static_cast<float>(totalContentHeight)) * height;
-				// Calculate the scroll bar position based on the scroll position
-				float scrollBarY = y + (scrollPosition / static_cast<float>(totalContentHeight)) * height;
-				// Draw the scroll bar
-				glUniform1i(useTextureLoc, 0); // Not using texture
-				glUniform4f(fallbackColorLoc, 0.5f, 0.5f, 0.5f, 1.0f); // Gray color
-				glm::mat4 scrollBarModel = glm::translate(glm::mat4(1.0f), glm::vec3(x + width - 10.0f, scrollBarY, 0.0f));
-				scrollBarModel = glm::scale(scrollBarModel, glm::vec3(10.0f, scrollBarHeight, 1.0f));
-				glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(scrollBarModel));
-				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-			}
-            
-
-
-            float currentY = y - scrollPosition; // Start drawing from the adjusted position
-            for (size_t i = 0; i < items.size(); ++i) {
-                if (currentY + 20 > y && currentY < y + height) { // Check if the item is within the visible area
-                    // Draw the item
-                    // Assuming 'textComponent' is used to draw each item
-                    textComponent->text = items[i];
-                    textComponent->x = x; // Adjust the X position
-                    textComponent->y = currentY;
-                    textComponent->Draw();
-                }
-                currentY += 20; // Move to the next item position
-            }
-
-            // Disable scissor test after drawing the text
-            glDisable(GL_SCISSOR_TEST);
 
             glBindVertexArray(0);
             glUseProgram(0);
         }
-    
+
 
 
         virtual void handleEvents(SDL_Event* event) override {
-            // Handle item selection, e.g., on mouse click
-            if (event->type == SDL_MOUSEBUTTONDOWN && event->button.button == SDL_BUTTON_LEFT) {
-                int mouseX = event->button.x;
-                int mouseY = event->button.y;
-                // Check if the click is within the bounds of the ListBoxComponent
-                if (mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height) {
-                    // Calculate which item was clicked based on the mouseY position and item height
-                    int itemHeight = 20; // Assuming each item has a fixed height of 20 pixels
-                    int clickedItemIndex = (mouseY - y) / itemHeight;
-                    if (clickedItemIndex >= 0 && clickedItemIndex < items.size()) {
-                        selectedItemIndex = clickedItemIndex; // Update the selected item index
-                        // Call the onItemSelected callback with the selected item
-                        if (onItemSelected) {
-                            onItemSelected(items[selectedItemIndex]);
-                        }
+            int mouseX, mouseY;
+            SDL_GetMouseState(&mouseX, &mouseY);
+
+            hoveredItemIndex = -1;
+            float itemY = y - scrollPosition;
+            for (size_t i = 0; i < items.size(); ++i) {
+                if (mouseX > x && mouseX < x + width && mouseY > itemY && mouseY < itemY + fontSize) {
+                    hoveredItemIndex = i;
+                    break;
+                }
+                itemY += fontSize + 5.0f;
+            }
+
+            if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_LEFT) {
+                if (hoveredItemIndex != -1) {
+                    selectedItemIndex = hoveredItemIndex;
+                    if (onItemSelected) {
+                        onItemSelected(items[selectedItemIndex]);
                     }
                 }
             }
 
-            // Handle mouse motion for hover effect
-            if (event->type == SDL_MOUSEMOTION) {
-                int mouseX = event->motion.x;
-                int mouseY = event->motion.y;
-                // Check if the mouse is within the list box bounds
-                if (mouseX > x && mouseX < x + width && mouseY > y && mouseY < y + height) {
-                    hoveredItemIndex = (mouseY - y) / 20; // Assuming 20px per item for simplicity
-                    if (hoveredItemIndex < 0 || hoveredItemIndex >= items.size()) {
-                        hoveredItemIndex = -1;
-                    }
-                }
-                else {
-                    hoveredItemIndex = -1;
-                }
-            }
+            // Handle mouse wheel scrolling
             if (event->type == SDL_MOUSEWHEEL) {
-                // Invert the direction of scrolling by multiplying by -1
-                scrollPosition -= event->wheel.y * 20; // Adjust scroll speed as needed
-                // Clamp scrollPosition to valid range
-                scrollPosition = std::max(0, std::min(scrollPosition, totalContentHeight - height));
-            }
-
-        }
-            //update posistion
-        virtual void updatePosition(float deltaX, float deltaY) override {
-            x += deltaX;
-            y += deltaY;
-
-            // Update the position of the text component relative to the new list box position
-            if (textComponent) {
-                textComponent->x = this->x;
-                textComponent->y = this->y;
+                int scrollAmount = event->wheel.y * (fontSize + 5); // Adjust this value as needed
+                scrollPosition = std::max(0, scrollPosition - scrollAmount);
+                totalContentHeight = static_cast<int>(items.size() * (fontSize + 5));
+                scrollPosition = std::min(scrollPosition, totalContentHeight - height);
             }
         }
+
         ~ListBoxComponent() {
-            delete textComponent;
+            delete textRenderer;
         }
-        
     };
+
+
 
     ////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////CHECK BOX COMPONENT////////////////////////////////////////
@@ -779,15 +732,13 @@ void main()
     ////////////////////////////PROGRESS BAR///////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////
     struct ProgressBarComponent : public UIComponent {
-        float initProgress = 0.0f; // Progress value between 0.0 and 1.0
+        float progress = 0.0f; // Progress value between 0.0 and 1.0
         int x, y;
         int width, height;
-
-        float progress;
         std::function<void(bool)> isComplete;
 
         ProgressBarComponent(int x, int y, int width, int height, std::function<void(bool)> isComplete, float initProgress = 0.0f)
-            : x(x), y(y), width(width), height(height), isComplete(isComplete), initProgress(progress) {}
+            : x(x), y(y), width(width), height(height), isComplete(isComplete), progress(initProgress) {}
 
         virtual void Draw() override {
             glUseProgram(shaderProgram);
@@ -812,6 +763,7 @@ void main()
             glBindVertexArray(0);
             glUseProgram(0);
         }
+
         virtual void handleEvents(SDL_Event* event) override {
             // Example: Update progress on mouse click within the progress bar bounds
             if (event->type == SDL_MOUSEBUTTONDOWN && event->button.button == SDL_BUTTON_LEFT) {
@@ -821,7 +773,7 @@ void main()
                 if (mouseX > x && mouseX < x + width && mouseY > y && mouseY < y + height) {
                     // Calculate new progress based on the click position
                     float newProgress = static_cast<float>(mouseX - x) / static_cast<float>(width);
-                    initProgress = std::clamp(newProgress, 0.0f, 1.0f); // Ensure progress is between 0.0 and 1.0
+                    setProgress(newProgress);
                 }
             }
         }
@@ -830,13 +782,23 @@ void main()
             // First, call the base class method to update the button's position
             UIComponent::updatePosition(deltaX, deltaY);
 
-            //Update the checkbox x and y based on the widgets movement
+            // Update the progress bar's position
             x += deltaX;
             y += deltaY;
         }
 
+        void setProgress(float newProgress) {
+            progress = std::clamp(newProgress, 0.0f, 1.0f); // Ensure progress is between 0.0 and 1.0
+            if (progress >= 1.0f && isComplete) {
+                isComplete(true); // Call the completion callback if progress is complete
+            }
+        }
 
+        void incrementProgress(float delta) {
+            setProgress(progress + delta); // Increment progress by delta
+        }
     };
+
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////
    //////////////////////////////TEXT BOX COMPONENT/////////////////////////////////////////////////////
@@ -857,10 +819,10 @@ void main()
 
         int selectionStart = -1, selectionEnd = -1;
         bool isSelecting = false;
-
+        float fontSize;
         TextBoxComponent(int x, int y, int width, int height, std::function<void(const std::string&)> onTextChanged, const std::string& text = "", float transparency = 1.0f)
             : x(x), y(y), width(width), height(height), onTextChanged(onTextChanged), text(text), transparency(transparency) {
-            textComponent = new TextComponent(text, 2.0f);
+            textComponent = new TextComponent(text, fontSize,x, y);
             maxCharsPerLine = width / 28;
         }
 
@@ -1101,24 +1063,35 @@ void main()
 
 
     //////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////TEXT INPUT BOX//////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////
+   /////////////////////////TEXT INPUT BOX//////////////////////////////////////////
+   //////////////////////////////////////////////////////////////////////////////////
     struct TextInputBoxComponent : public UIComponent {
         int x, y;
         int width, height;
         std::string text;
         std::function<void(const std::string&)> onTextChanged;
-        TextComponent* textComponent = nullptr;
+        TextRenderer* textRenderer = nullptr; // Use TextRenderer from atlas_text.h
         bool isFocused = false;
         int options;
+        float fontSize;
+
+        // Declare missing variables
+        bool isSelecting = false;
+        int selectionStart = -1;
+        int selectionEnd = -1;
+        int scrollPosition = 0;
+        int scrollSpeed = 10; // Example value, adjust as needed
+        int totalTextHeight = 1000; // Example value, adjust as needed
+        int lineHeight = 20; // Example value, adjust as needed
+        int maxCharsPerLine = 50; // Example value, adjust as needed
 
         TextInputBoxComponent(int x, int y, int width, int height, std::function<void(const std::string&)> onTextChanged, const std::string& text = "", int options = 0)
-            : x(x), y(y), width(width), height(height), onTextChanged(onTextChanged), text(text), options(options) { // Add options to the initializer list
-            textComponent = new TextComponent(text, 2.0f);
+            : x(x), y(y), width(width), height(height), onTextChanged(onTextChanged), text(text), options(options), fontSize(24.0f) { // Initialize fontSize
+            textRenderer = new TextRenderer(fontSize); // Initialize TextRenderer
         }
 
         virtual void Draw() override {
-            //draw the box for the input box
+            // Draw the box for the input box
             glUseProgram(shaderProgram);
             glBindVertexArray(VAO);
             glUniform1i(glGetUniformLocation(shaderProgram, "useTexture"), 0); // Indicate not using texture
@@ -1134,87 +1107,83 @@ void main()
             glBindVertexArray(0);
             glUseProgram(0);
 
-            // Calculate the maximum number of characters per line for basic text wrapping
-            int maxCharsPerLine = width / 10; // Assuming each character is approx 10 pixels wide
-
-            std::string wrappedText;
-            int charCount = 0;
-            for (char c : text) {
-                wrappedText += c;
-                if (c == '\n') {
-                    charCount = 0; // Reset character count on new line
-                }
-                else {
-                    charCount++;
-                    if (charCount >= maxCharsPerLine) {
-                        wrappedText += '\n'; // Insert a newline character
-                        charCount = 0;
-                    }
-                }
-            }
-
-            // Initially, set the text component's text to the wrapped text
-            textComponent->text = wrappedText;
-
-            // Then, check if the textbox has the password flag set
-            if (hasFlag(options, WIDGET_PASSWORD)) {
-                std::string passwordText(wrappedText.length(), '*'); // Create a string of asterisks with the same length as the wrapped text
-                textComponent->text = passwordText; // Now, set the text component's text to the password text
-            }
-
-            // Adjust the text component's position
-            textComponent->x = x + 5;
-            textComponent->y = y + 5;
-
-            // Finally, draw the text component
-            textComponent->Draw();
+            // Render the text using TextRenderer
+            textRenderer->RenderText(text, x + 5, y + height / 2, 1.0f, glm::vec3(0.0f, 0.0f, 0.0f)); // Adjust position and scale as needed
         }
 
         virtual void handleEvents(SDL_Event* event) override {
-            if (event->type == SDL_TEXTINPUT && isFocused) {
-                text += event->text.text;
-                textComponent->text = text;
-                if (onTextChanged) {
-                    onTextChanged(text);
-                }
-            }
-            else if (event->type == SDL_KEYDOWN && isFocused) {
-                if (event->key.keysym.sym == SDLK_BACKSPACE && !text.empty()) {
-                    // Remove the last character
-                    text.pop_back();
-                    textComponent->text = text;
-                    if (onTextChanged) {
-                        onTextChanged(text);
-                    }
-                }
-                else if (event->key.keysym.sym == SDLK_RETURN || event->key.keysym.sym == SDLK_KP_ENTER) {
-                    // Insert a newline character
-                    text += '\n';
-                    textComponent->text = text;
-                    if (onTextChanged) {
-                        onTextChanged(text);
-                    }
-                }
-            }
-            else if (event->type == SDL_MOUSEBUTTONDOWN) {
-                int mouseX = event->button.x;
-                int mouseY = event->button.y;
-                if (mouseX > x && mouseX < x + width && mouseY > y && mouseY < y + height) {
+            if (event->type == SDL_MOUSEBUTTONDOWN) {
+                if (event->button.x >= x && event->button.x <= x + width &&
+                    event->button.y >= y && event->button.y <= y + height) {
                     isFocused = true;
+                    isSelecting = true;
+                    selectionStart = calculateTextIndexAtPosition(event->button.x, event->button.y);
+                    selectionEnd = selectionStart;
                 }
                 else {
                     isFocused = false;
+                    isSelecting = false;
+                    selectionStart = selectionEnd = -1;
                 }
+            }
+            else if (event->type == SDL_MOUSEBUTTONUP) {
+                isSelecting = false;
+            }
+            else if (event->type == SDL_MOUSEMOTION && isSelecting) {
+                selectionEnd = calculateTextIndexAtPosition(event->motion.x, event->motion.y);
+            }
+            else if (event->type == SDL_MOUSEWHEEL && isFocused) {
+                scrollPosition += event->wheel.y * scrollSpeed;
+                scrollPosition = std::max(0, std::min(scrollPosition, totalTextHeight - height));
+            }
+            else if (event->type == SDL_TEXTINPUT && isFocused) {
+                text.insert(selectionEnd, event->text.text);
+                selectionEnd += strlen(event->text.text);
+                onTextChanged(text);
+            }
+            else if (event->type == SDL_KEYDOWN && isFocused) {
+                if (event->key.keysym.sym == SDLK_BACKSPACE && selectionEnd > 0) {
+                    text.erase(selectionEnd - 1, 1);
+                    selectionEnd--;
+                    onTextChanged(text);
+                }
+            }
+        }
+
+        int calculateTextIndexAtPosition(int mouseX, int mouseY) {
+            int line = (mouseY - y + scrollPosition) / lineHeight;
+            int charIndex = (mouseX - x) / 10; // Assuming each character is approx 10 pixels wide
+            int totalIndex = line * maxCharsPerLine + charIndex;
+            return std::min(totalIndex, static_cast<int>(text.length()));
+        }
+
+        std::string getSelectedText() {
+            if (selectionStart != -1 && selectionEnd != -1 && selectionStart != selectionEnd) {
+                int start = std::min(selectionStart, selectionEnd);
+                int end = std::max(selectionStart, selectionEnd);
+                return text.substr(start, end - start);
+            }
+            return "";
+        }
+
+        void deleteSelectedText() {
+            if (selectionStart != -1 && selectionEnd != -1 && selectionStart != selectionEnd) {
+                int start = std::min(selectionStart, selectionEnd);
+                int end = std::max(selectionStart, selectionEnd);
+                text.erase(start, end - start);
+                selectionStart = start;
+                selectionEnd = selectionStart;
             }
         }
 
         virtual void updatePosition(float deltaX, float deltaY) override {
-            // First, call the base class method to update the button's position
+            UIComponent::updatePosition(deltaX, deltaY);
             x += deltaX;
             y += deltaY;
         }
-
     };
+
+
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////IMAGE COMPONENT////////////////////////////////////////////////////////////
@@ -1281,9 +1250,9 @@ void main()
             y += deltaY;
         }
     };
-    
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////ANIMATED IMAGE COMPONENT///////////////////////////////////////////////////////////////
+    ///////////////////////////////////ANIMATED IMAGE COMPONENT DO NO USE DOES NOT WORK CORRECTLY//////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     struct animatedImage : public UIComponent {
         int x, y;
@@ -1296,7 +1265,7 @@ void main()
         float frameDuration; // Duration of each frame in seconds
         float elapsedTime = 0.0f; // Time elapsed since the last frame change
         float deltaTime = 0.0f;
-        
+
         animatedImage(int x, int y, int width, int height, const std::string& imagePath, int frames, float frameDuration)
             : x(x), y(y), width(width), height(height), frames(frames), frameDuration(frameDuration) {
             SDL_Surface* surface = IMG_Load(imagePath.c_str());
@@ -1358,22 +1327,22 @@ void main()
             glUseProgram(0);
         }
 
-            virtual void handleEvents(SDL_Event* event) override {
-				//Iterate over each frame to cause image to be animated
-                if (event->type == SDL_MOUSEBUTTONDOWN) {
-					keyFrame++;
-					if (keyFrame >= frames) {
-						keyFrame = 0;
-					}
-				}
+        virtual void handleEvents(SDL_Event* event) override {
+            //Iterate over each frame to cause image to be animated
+            if (event->type == SDL_MOUSEBUTTONDOWN) {
+                keyFrame++;
+                if (keyFrame >= frames) {
+                    keyFrame = 0;
                 }
-
-            virtual void updatePosition(float deltaX, float deltaY) override {
-                x += deltaX;
-                y += deltaY;
             }
+        }
+
+        virtual void updatePosition(float deltaX, float deltaY) override {
+            x += deltaX;
+            y += deltaY;
+        }
     };
-			
+
 
 
 
@@ -1384,15 +1353,15 @@ void main()
     struct Tab : public UIComponent {
         int x, y;
         int width, height;
-        
+
         std::string text;
         std::function<void()> onClick;
         TextComponent* textComponent = nullptr;
-
+        float fontSize;
         Tab(int x, int y, int width, int height, const std::string& text, std::function<void()> onClick)
-			: x(x), y(y), width(width), height(height), text(text), onClick(onClick) {
-			textComponent = new TextComponent(text, 2.0f);
-		}
+            : x(x), y(y), width(width), height(height), text(text), onClick(onClick) {
+            textComponent = new TextComponent(text, fontSize,x, y);
+        }
 
         virtual void Draw() override {
             // Draw the tab background
@@ -1425,32 +1394,335 @@ void main()
                 textComponent->Draw();
             }
 
-			glBindVertexArray(0);
-			glUseProgram(0);
-		}
+            glBindVertexArray(0);
+            glUseProgram(0);
+        }
 
-		virtual void handleEvents(SDL_Event* event) override {
-			if (event->type == SDL_MOUSEBUTTONDOWN) {
-				int mouseX = event->button.x;
-				int mouseY = event->button.y;
-				if (mouseX > x && mouseX < x + width && mouseY > y && mouseY < y + height) {
-					if (onClick) {
-						onClick();
-					}
-				}
-			}
-		}
+        virtual void handleEvents(SDL_Event* event) override {
+            if (event->type == SDL_MOUSEBUTTONDOWN) {
+                int mouseX = event->button.x;
+                int mouseY = event->button.y;
+                if (mouseX > x && mouseX < x + width && mouseY > y && mouseY < y + height) {
+                    if (onClick) {
+                        onClick();
+                    }
+                }
+            }
+        }
 
-		virtual void updatePosition(float deltaX, float deltaY) override {
-			// First, call the base class method to update the button's position
-			x += deltaX;
-			y += deltaY;
-		}
+        virtual void updatePosition(float deltaX, float deltaY) override {
+            // First, call the base class method to update the button's position
+            x += deltaX;
+            y += deltaY;
+        }
     };
-    
 
-    
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////FILE BROWSER COMPONENT//////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    struct FileBrowser : public UIComponent {
+        int x, y;
+        int width, height;
+        std::string currentPath; // Base path for the sidebar directory list
+        std::vector<std::string> directories; // Static list of directories
+        std::vector<std::string> files; // Dynamic file list
+        std::function<void(const std::string&)> onFileSelected;
+        TextComponent* textComponent = nullptr;
+        float fontSize;
+        TextRenderer* textRenderer;
+        int sidebarScrollOffset = 0; // Separate scroll offset for the sidebar
+        int fileListScrollOffset = 0; // Separate scroll offset for the main file list area
 
+        std::string selectedDirectory; // Track the currently selected directory
+
+        bool isMouseOverSidebar;
+        bool isMouseOverFileList;
+
+        ImageComponent* directoryIcon = nullptr; // Add an ImageComponent for the directory icon
+
+        FileBrowser(int x, int y, int width, int height, const std::string& currentPath, float fontSize, std::function<void(const std::string&)> onFileSelected)
+            : x(x), y(y), width(width), height(height), currentPath(currentPath), fontSize(fontSize), onFileSelected(onFileSelected) {
+            textComponent = new TextComponent(currentPath, fontSize, x, y);
+            textRenderer = new TextRenderer(fontSize);
+            directoryIcon = new ImageComponent(0, 0, 16, 16, "UI/directory.png"); // Load the directory icon
+            updateDirectoryList();
+            updateFileList(); // Initialize file list (empty at start)
+        }
+
+        ~FileBrowser() {
+            delete textRenderer;
+            delete textComponent;
+            delete directoryIcon; // Clean up the directory icon
+        }
+
+        void updateDirectoryList() {
+            directories.clear();
+            if (!currentPath.empty()) {
+                try {
+                    for (const auto& entry : fs::directory_iterator(currentPath)) {
+                        if (fs::is_directory(entry.path())) {
+                            directories.push_back(entry.path().filename().string());
+                        }
+                    }
+                }
+                catch (const fs::filesystem_error& e) {
+                    std::cerr << "Filesystem error: " << e.what() << std::endl;
+                }
+            }
+        }
+
+        void updateFileList() {
+            files.clear();
+            if (!selectedDirectory.empty()) {
+                try {
+                    for (const auto& entry : fs::directory_iterator(selectedDirectory)) {
+                        files.push_back(entry.path().filename().string());
+                    }
+                }
+                catch (const fs::filesystem_error& e) {
+                    std::cerr << "Filesystem error: " << e.what() << std::endl;
+                }
+            }
+        }
+
+        virtual void Draw() override {
+            // Use the shader program
+            glUseProgram(shaderProgram);
+            glBindVertexArray(VAO);
+            glUniform1i(glGetUniformLocation(shaderProgram, "useTexture"), 0); // Not using texture
+
+            // Render the border (e.g., light gray)
+            glUniform4f(glGetUniformLocation(shaderProgram, "fallbackColor"), 0.9f, 0.9f, 0.9f, 1.0f);
+            glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(x - 1, y - 1, 0.0f));
+            model = glm::scale(model, glm::vec3(width + 2, height + 2, 1.0f));
+            glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
+            glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+            // Render the main background (e.g., white or very light gray)
+            glUniform4f(glGetUniformLocation(shaderProgram, "fallbackColor"), 0.97f, 0.97f, 0.97f, 1.0f);
+            model = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, 0.0f));
+            model = glm::scale(model, glm::vec3(width, height, 1.0f));
+            glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
+            glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+            // Render the sidebar (e.g., light blue or gray) - Static directory list
+            glUniform4f(glGetUniformLocation(shaderProgram, "fallbackColor"), 0.85f, 0.85f, 0.90f, 1.0f);
+            model = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, 0.0f));
+            model = glm::scale(model, glm::vec3(width / 4, height, 1.0f));
+            glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
+            glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+            // Render the main file list area (e.g., slightly darker than background)
+            glUniform4f(glGetUniformLocation(shaderProgram, "fallbackColor"), 0.94f, 0.94f, 0.94f, 1.0f);
+            model = glm::translate(glm::mat4(1.0f), glm::vec3(x + width / 4, y, 0.0f));
+            model = glm::scale(model, glm::vec3(width * 3 / 4, height, 1.0f));
+            glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
+            glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+            // Render the header/toolbar (e.g., dark gray)
+            glUniform4f(glGetUniformLocation(shaderProgram, "fallbackColor"), 0.6f, 0.6f, 0.6f, 1.0f);
+            model = glm::translate(glm::mat4(1.0f), glm::vec3(x, y + height - 20, 0.0f)); // Assuming header height of 20
+            model = glm::scale(model, glm::vec3(width, 20, 1.0f));
+            glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
+            glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+            // Render the text in the sidebar (directory list)
+            float textX = x + 10; // Adjust as needed
+            float textY = y + 30 - sidebarScrollOffset; // Adjust initial position with scrollOffset
+            int textHeight = textRenderer->GetTextHeight("A") + 5; // Calculate text height including spacing
+            int iconSize = 16; // Assuming icon size is 16x16
+            for (const auto& directory : directories) {
+                
+                // Skip rendering text above the viewable area
+                if (textY + textHeight < y) {
+                    textY += textHeight;
+                    continue;
+                }
+                // Stop rendering if below the viewable area
+                if (textY > y + height) break;
+
+                directoryIcon->x = x + 5;
+                directoryIcon->y = textY;
+                directoryIcon->Draw(); // Draw the directory icon
+
+                textRenderer->RenderText(directory, textX, textY, 1.0f, glm::vec3(0.0f, 0.0f, 0.0f));
+                textY += textHeight; // Adjust spacing as needed
+            }
+
+            // Render the text in the main file list area (only if a directory is selected)
+            if (!selectedDirectory.empty()) {
+                textX = x + width / 4 + 10; // Adjust position for the main file list box
+                textY = y + 30 - fileListScrollOffset; // Adjust initial position with scrollOffset
+
+                for (const auto& file : files) {
+                    // Skip rendering text above the viewable area
+                    if (textY + textHeight < y) {
+                        textY += textHeight;
+                        continue;
+                    }
+                    // Stop rendering if below the viewable area
+                    if (textY > y + height) break;
+
+                    textRenderer->RenderText(file, textX, textY, 1.0f, glm::vec3(0.0f, 0.0f, 0.0f));
+                    textY += textHeight; // Adjust spacing as needed
+                }
+            }
+
+            glBindVertexArray(0);
+            glUseProgram(0);
+        }
+        virtual void handleEvents(SDL_Event* event) override {
+            if (event->type == SDL_MOUSEBUTTONDOWN) {
+                int mouseX = event->button.x;
+                int mouseY = event->button.y;
+
+               
+
+                // Check if clicked in the sidebar
+                if (mouseX > x && mouseX < x + width / 4 && mouseY > y && mouseY < y + height) {
+                    int directoryIndex = (mouseY - y + sidebarScrollOffset) / (textRenderer->GetTextHeight("A") + 5);
+                 
+                    if (directoryIndex >= 0 && directoryIndex < directories.size()) {
+                        std::string selectedDir = directories[directoryIndex];
+                        std::string fullPath = currentPath + "/" + selectedDir;
+
+                        try {
+                            if (std::filesystem::exists(fullPath) && std::filesystem::is_directory(fullPath)) {
+                                selectedDirectory = fullPath;
+                                textComponent->text = selectedDirectory;
+                                if (onFileSelected) {
+                                    onFileSelected(selectedDirectory);
+                                }
+                                updateFileList();
+                            }
+                            else {
+                                std::cerr << "Selected path is not a directory or does not exist: " << fullPath << std::endl;
+                            }
+                        }
+                        catch (const std::filesystem::filesystem_error& e) {
+                            std::cerr << "Filesystem error: " << e.what() << std::endl;
+                        }
+                    }
+                }
+            }
+
+            if (event->type == SDL_MOUSEMOTION) {
+                int mouseX = event->motion.x;
+                int mouseY = event->motion.y;
+
+                // Check if the mouse is over the sidebar
+                if (mouseX > x && mouseX < x + width / 4 && mouseY > y && mouseY < y + height) {
+                    isMouseOverSidebar = true;
+                    isMouseOverFileList = false;
+                }
+                // Check if the mouse is over the main file list area
+                else if (mouseX > x + width / 4 && mouseX < x + width && mouseY > y && mouseY < y + height) {
+                    isMouseOverSidebar = false;
+                    isMouseOverFileList = true;
+                }
+                else {
+                    isMouseOverSidebar = false;
+                    isMouseOverFileList = false;
+                }
+            }
+
+            if (event->type == SDL_MOUSEWHEEL) {
+                if (isMouseOverSidebar) {
+                    sidebarScrollOffset -= event->wheel.y * 20;
+                    if (sidebarScrollOffset < 0) sidebarScrollOffset = 0;
+                    int maxScroll = std::max(0, static_cast<int>(directories.size() * (textRenderer->GetTextHeight("A") + 5) - height));
+                    if (sidebarScrollOffset > maxScroll) sidebarScrollOffset = maxScroll;
+                   
+                }
+
+                if (isMouseOverFileList) {
+                    fileListScrollOffset -= event->wheel.y * 20;
+                    if (fileListScrollOffset < 0) fileListScrollOffset = 0;
+                    int maxScroll = std::max(0, static_cast<int>(files.size() * (textRenderer->GetTextHeight("A") + 5) - height));
+                    if (fileListScrollOffset > maxScroll) fileListScrollOffset = maxScroll;
+                 
+                }
+            }
+        }
+
+
+
+
+
+        virtual void updatePosition(float deltaX, float deltaY) override {
+            x += deltaX;
+            y += deltaY;
+        }
+    };
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////LABEL COMPONENT//////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    struct LabelComponent : public UIComponent {
+        std::string text;
+        TextRenderer* textRenderer = nullptr;
+        float fontSize;
+        glm::vec3 textColor;
+
+        LabelComponent(int x, int y, const std::string& text, float fontSize, int width, int height, glm::vec3 textColor = glm::vec3(1.0f, 0.0f, 1.0f))
+            : text(text), fontSize(fontSize), textColor(textColor) {
+            this->x = x;
+            this->y = y;
+            this->width = width;
+            this->height = height;
+            textRenderer = new TextRenderer(fontSize);
+        }
+
+        virtual void Draw() override {
+            if (!textRenderer) {
+                std::cerr << "Error: textRenderer is not initialized." << std::endl;
+                return;
+            }
+
+            glUseProgram(shaderProgram);
+            glBindVertexArray(VAO);
+            glUniform1i(glGetUniformLocation(shaderProgram, "useTexture"), 0);
+            glUniform4f(glGetUniformLocation(shaderProgram, "fallbackColor"), 0.9f, 0.9f, 0.9f, 1.0f);
+
+            glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, 0.0f));
+            model = glm::scale(model, glm::vec3(width, height, 1.0f));
+            glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
+            glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+            if (textRenderer) {
+                float textWidth = textRenderer->GetTextWidth(text);
+                float textHeight = textRenderer->GetTextHeight(text);
+
+                float textX = x + (width - textWidth) / 2.0f;
+                float textY = y + (height + textHeight) / 2.0f;
+
+                if (parent) {
+                    textX += parent->x;
+                    textY += parent->y;
+                }
+
+                textRenderer->RenderText(text, textX, textY, 1.0f, textColor);
+            }
+        }
+
+        virtual void handleEvents(SDL_Event* event) override {
+            // No event handling for the label component
+        }
+
+        virtual void updatePosition(float deltaX, float deltaY) override {
+            x += deltaX;
+            y += deltaY;
+        }
+        ~LabelComponent() {
+            delete textRenderer;
+        }
+    };
 
 
 
@@ -1477,7 +1749,7 @@ void main()
         }
         else {
             glUniform1i(useTextureUniform, 0);
-            glUniform4f(glGetUniformLocation(shaderProgram, "fallbackColor"), widget.color.r,widget.color.g,widget.color.b,widget.color.a);
+            glUniform4f(glGetUniformLocation(shaderProgram, "fallbackColor"), widget.color.r, widget.color.g, widget.color.b, widget.color.a);
         }
 
         // Draw the widget's base rectangle
@@ -1494,6 +1766,7 @@ void main()
             widget.textComponent->Draw();
         }
 
+       
         glBindVertexArray(0);
         glUseProgram(0);
     }
@@ -1517,10 +1790,10 @@ void main()
             throw std::runtime_error("EndWidget must be called before calling a new widget");
             return;
         }
-        
+
         uiManager.isCreatingWidget = true;
         auto widget = new Widget();
-        
+
         if (hasFlag(options, WIDGET_HIDDEN))
         {
             widget->isVisable = false;
@@ -1532,8 +1805,8 @@ void main()
         else {
             widget->isVisable = true;
         }
-        
-        if(widget->isVisable)
+
+        if (widget->isVisable)
         {
 
             widget->ID = id;
@@ -1542,7 +1815,7 @@ void main()
             widget->width = width;
             widget->height = height;
             widget->texture = 0;
-           
+
             SDL_Surface* surface = IMG_Load(texturePath.c_str());
             if (surface) {
                 glGenTextures(1, &widget->texture);
@@ -1565,34 +1838,33 @@ void main()
             else {
                 std::cerr << "Failed to load texture: " << IMG_GetError() << std::endl;
             }
-            
+
             if (hasFlag(options, WIDGET_DRAGGABLE)) {
                 widget->draggableComponent = new DraggableComponent();
                 widget->draggableComponent->parent = widget;
             }
-          
+
             uiManager.widgets.push_back(widget);
             uiManager.currentWidget = widget;
         }
-        
-        
+
+
     }
 
 
 
-    
 
-    void Text(const std::string& text, float fontSize, float x = 0.0f, float y = 0.0f) {
+
+    void Text(const std::string& text, float fontSize, float x = 0.0f, float y = 0.0f, std::string fontPath = "arial.ttf") {
         if (!uiManager.currentWidget) {
             std::cerr << "No widget selected" << std::endl;
             return;
         }
         // Create a new TextComponent with the provided x and y as offsets from the widget's position
-        auto textComponent = new TextComponent(text, fontSize, x, y);
+        auto textComponent = new TextComponent(text, fontSize,x, y);
         textComponent->parent = uiManager.currentWidget;
         uiManager.currentWidget->components.push_back(textComponent);
     }
-
     void Button(const std::string& text, float fontSize, const std::string& texturePath, std::function<void()> onClick, int buttonWidth = 100, int buttonHeight = 50, int x = 0, int y = 0) {
         if (!uiManager.currentWidget) {
             std::cerr << "No widget selected" << std::endl;
@@ -1613,9 +1885,9 @@ void main()
             std::cerr << "No widget selected" << std::endl;
             return;
         }
-        auto listBoxComponent = new ListBoxComponent(items, onItemSelected, ListBoxwidth, ListBoxheight,x,y);
-       listBoxComponent->y += static_cast<float>(uiManager.currentWidget->y);
-       listBoxComponent->x = static_cast<float>(uiManager.currentWidget->x);
+        auto listBoxComponent = new ListBoxComponent(items, onItemSelected, ListBoxwidth, ListBoxheight, x, y);
+        listBoxComponent->y += static_cast<float>(uiManager.currentWidget->y);
+        listBoxComponent->x = static_cast<float>(uiManager.currentWidget->x);
         listBoxComponent->width = ListBoxwidth;
         listBoxComponent->height = ListBoxheight;
         listBoxComponent->parent = uiManager.currentWidget;
@@ -1662,7 +1934,7 @@ void main()
             return;
         }
         // Create a new TextBoxComponent
-       auto textBoxComponent = new TextBoxComponent(x, y, width, height, onTextChanged, text, transparency);
+        auto textBoxComponent = new TextBoxComponent(x, y, width, height, onTextChanged, text, transparency);
 
         // Adjust position relative to the current widget
         textBoxComponent->x += static_cast<float>(uiManager.currentWidget->x);
@@ -1693,12 +1965,12 @@ void main()
 
 
     void Image(int x, int y, int width, int height, const std::string& imagePath) {
-		if (!uiManager.currentWidget) {
-			std::cerr << "No widget selected" << std::endl;
-			return;
-		}
-		// Create a new ImageComponent
-		auto imageComponent = new ImageComponent(x, y, width, height, imagePath);
+        if (!uiManager.currentWidget) {
+            std::cerr << "No widget selected" << std::endl;
+            return;
+        }
+        // Create a new ImageComponent
+        auto imageComponent = new ImageComponent(x, y, width, height, imagePath);
         // Adjust position relative to the current widget
         imageComponent->x += static_cast<float>(uiManager.currentWidget->x);
         imageComponent->y += static_cast<float>(uiManager.currentWidget->y);
@@ -1707,42 +1979,78 @@ void main()
 
         // Add the ImageComponent to the current widget's components for it to be drawn
         uiManager.currentWidget->components.push_back(imageComponent);
-	}
+    }
 
     void AnimatedImage(int x, int y, int width, int height, const std::string& imagePath, int frames, float frameDuration) {
         if (!uiManager.currentWidget) {
-			std::cerr << "No widget selected" << std::endl;
-			return;
-		}
-		// Create a new AnimatedImageComponent
-		auto animatedImageComponent = new animatedImage(x, y, width, height, imagePath, frames, frameDuration);
-		// Adjust position relative to the current widget
-		animatedImageComponent->x += static_cast<float>(uiManager.currentWidget->x);
-		animatedImageComponent->y += static_cast<float>(uiManager.currentWidget->y);
-		animatedImageComponent->width = width;
-		animatedImageComponent->height = height;
+            std::cerr << "No widget selected" << std::endl;
+            return;
+        }
+        // Create a new AnimatedImageComponent
+        auto animatedImageComponent = new animatedImage(x, y, width, height, imagePath, frames, frameDuration);
+        // Adjust position relative to the current widget
+        animatedImageComponent->x += static_cast<float>(uiManager.currentWidget->x);
+        animatedImageComponent->y += static_cast<float>(uiManager.currentWidget->y);
+        animatedImageComponent->width = width;
+        animatedImageComponent->height = height;
 
-		// Add the AnimatedImageComponent to the current widget's components for it to be drawn
-		uiManager.currentWidget->components.push_back(animatedImageComponent);
-	}
+        // Add the AnimatedImageComponent to the current widget's components for it to be drawn
+        uiManager.currentWidget->components.push_back(animatedImageComponent);
+    }
     void Tabs(int x, int y, int width, int height, const std::string& text, std::function<void()> onClick) {
+        if (!uiManager.currentWidget) {
+            std::cerr << "No widget selected" << std::endl;
+            return;
+        }
+        // Create a new Tab
+        auto tab = new Tab(x, y, width, height, text, onClick);
+        // Adjust position relative to the current widget
+        tab->x += static_cast<float>(uiManager.currentWidget->x);
+        tab->y += static_cast<float>(uiManager.currentWidget->y);
+        tab->width = width;
+        tab->height = height;
+
+        // Add the Tab to the current widget's components for it to be drawn and interacted with
+        uiManager.currentWidget->components.push_back(tab);
+    }
+
+    //File browser component
+    void File(int x, int y, int width, int height, const std::string& currentPath, std::function<void(const std::string&)> onFileSelected, float fontSize) {
+        if (!uiManager.currentWidget) {
+            std::cerr << "No widget selected" << std::endl;
+            return;
+        }
+        // Create a new FileBrowser
+        auto fileBrowser = new FileBrowser(x, y, width, height, currentPath, fontSize, onFileSelected);
+        // Adjust position relative to the current widget
+        fileBrowser->x += static_cast<float>(uiManager.currentWidget->x);
+        fileBrowser->y += static_cast<float>(uiManager.currentWidget->y);
+        fileBrowser->width = width;
+        fileBrowser->height = height;
+
+        // Add the FileBrowser to the current widget's components for it to be drawn and interacted with
+        uiManager.currentWidget->components.push_back(fileBrowser);
+    }
+
+    //label function
+    void Label(int x, int y, const std::string& text, float fontSize, int width, int height) {
 		if (!uiManager.currentWidget) {
 			std::cerr << "No widget selected" << std::endl;
 			return;
 		}
-		// Create a new Tab
-		auto tab = new Tab(x, y, width, height,text, onClick);
+		// Create a new LabelComponent
+		auto labelComponent = new LabelComponent(x, y, text, fontSize, width, height);
 		// Adjust position relative to the current widget
-		tab->x += static_cast<float>(uiManager.currentWidget->x);
-		tab->y += static_cast<float>(uiManager.currentWidget->y);
-		tab->width = width;
-		tab->height = height;
+		labelComponent->x += static_cast<float>(uiManager.currentWidget->x);
+		labelComponent->y += static_cast<float>(uiManager.currentWidget->y);
+		labelComponent->width = width;
+		labelComponent->height = height;
 
-		// Add the Tab to the current widget's components for it to be drawn and interacted with
-		uiManager.currentWidget->components.push_back(tab);
+		// Add the LabelComponent to the current widget's components for it to be drawn
+		uiManager.currentWidget->components.push_back(labelComponent);
 	}
 
-    
+
     //Close widget call
     void closewidget(int ID) {
         for (auto widget : uiManager.widgets) {
