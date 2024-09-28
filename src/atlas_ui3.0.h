@@ -24,6 +24,8 @@
 
 namespace fs = std::filesystem;
 
+
+
 namespace Atlas {
 
 
@@ -33,7 +35,11 @@ namespace Atlas {
     void setProjectionMatrix(int screenWidth, int screenHeight) {
         projection = glm::ortho(0.0f, static_cast<float>(screenWidth), static_cast<float>(screenHeight), 0.0f);
         glUseProgram(shaderProgram);
-        glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+        GLint projLoc = glGetUniformLocation(shaderProgram, "projection");
+        if (projLoc == -1) {
+            std::cerr << "Failed to find 'projection' uniform location!" << std::endl;
+        }
+        glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
     }
 
 
@@ -82,11 +88,7 @@ namespace Atlas {
             color = glm::vec4(r, g, b, a);
         }
         ~Widget() {
-            delete textComponent;
-            // Remember to delete components in the vector to avoid memory leaks
-            for (auto& component : components) {
-                delete component;
-            }
+        
 
             
         }
@@ -208,6 +210,7 @@ namespace Atlas {
             else {
                 std::cout << "Shader program linked successfully" << std::endl;
             }
+            std::cout << "Shader Program UI ID: " << shaderProgram << std::endl;
         }
     }
 
@@ -1108,7 +1111,11 @@ void main()
             glUseProgram(0);
 
             // Render the text using TextRenderer
-            textRenderer->RenderText(text, x + 5, y + height / 2, 1.0f, glm::vec3(0.0f, 0.0f, 0.0f)); // Adjust position and scale as needed
+            std::string displayText = text;
+            if (hasFlag(options, WIDGET_PASSWORD)) {
+                displayText = std::string(text.length(), '*');
+            }
+            textRenderer->RenderText(displayText, x + 5, y + height / 2, 1.0f, glm::vec3(0.0f, 0.0f, 0.0f)); // Adjust position and scale as needed
         }
 
         virtual void handleEvents(SDL_Event* event) override {
@@ -1189,32 +1196,30 @@ void main()
     ///////////////////////////////////////////IMAGE COMPONENT////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     struct ImageComponent : public UIComponent {
-        int width, height;
-        int x, y;
-        GLuint texture;
+        GLuint texture = 0; // Initialize texture
 
         ImageComponent(int x, int y, int width, int height, const std::string& imagePath)
-            : x(x), y(y), width(width), height(height) {
+            : UIComponent(), texture(0) { // Ensure texture is initialized
+            this->x = x;
+            this->y = y;
+            this->width = width;
+            this->height = height;
+
+            // Load the image
             SDL_Surface* surface = IMG_Load(imagePath.c_str());
             if (surface) {
                 glGenTextures(1, &texture);
                 glBindTexture(GL_TEXTURE_2D, texture);
 
-                GLenum format;
-                if (surface->format->BytesPerPixel == 4) {
-                    format = GL_RGBA;
-                }
-                else {
-                    format = GL_RGB;
-                }
-
+                GLenum format = surface->format->BytesPerPixel == 4 ? GL_RGBA : GL_RGB;
                 glTexImage2D(GL_TEXTURE_2D, 0, format, surface->w, surface->h, 0, format, GL_UNSIGNED_BYTE, surface->pixels);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
                 SDL_FreeSurface(surface);
             }
             else {
-                std::cerr << "Failed to load texture: " << IMG_GetError() << std::endl;
+                std::cerr << "Failed to load image " << IMG_GetError() << std::endl;
             }
         }
 
@@ -1248,6 +1253,11 @@ void main()
             // First, call the base class method to update the button's position
             x += deltaX;
             y += deltaY;
+        }
+        ~ImageComponent() {
+            if (texture) {
+                glDeleteTextures(1, &texture);
+            }
         }
     };
 
@@ -1724,6 +1734,84 @@ void main()
         }
     };
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////TILED BACKGROUND FOR WIDGET///////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    struct TiledBG : public UIComponent {
+		int startingX, startingY;
+		int tileWidth, tileHeight;
+		int numTilesX, numTilesY;
+		GLuint texture = 0;
+
+        TiledBG(int x, int y, int width, int height, int tileWidth, int tileHeight, const std::string& texturePath)
+            : startingX(x), startingY(y), tileWidth(tileWidth), tileHeight(tileHeight) {
+            this->width = width;
+            this->height = height;
+
+            SDL_Surface* surface = IMG_Load(texturePath.c_str());
+            if (surface) {
+                glGenTextures(1, &texture);
+                glBindTexture(GL_TEXTURE_2D, texture);
+
+                GLenum format;
+                if (surface->format->BytesPerPixel == 4) {
+                    format = GL_RGBA;
+                }
+                else {
+                    format = GL_RGB;
+                }
+
+                glTexImage2D(GL_TEXTURE_2D, 0, format, surface->w, surface->h, 0, format, GL_UNSIGNED_BYTE, surface->pixels);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+                numTilesX = width / tileWidth;
+                numTilesY = height / tileHeight;
+
+                SDL_FreeSurface(surface);
+
+            }
+            else {
+                std::cerr << "Failed to load texture: " << IMG_GetError() << std::endl;
+            }
+        }
+
+		virtual void Draw() override {
+			glUseProgram(shaderProgram);
+			glBindVertexArray(VAO);
+
+			glUniform1i(glGetUniformLocation(shaderProgram, "useTexture"), 1); // Indicate using texture
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, texture);
+			glUniform1i(glGetUniformLocation(shaderProgram, "texture1"), 0);
+
+			glUniform4f(glGetUniformLocation(shaderProgram, "fallbackColor"), 1.0f, 1.0f, 1.0f, 1.0f); // White color
+
+			for (int i = 0; i < numTilesX; i++) {
+				for (int j = 0; j < numTilesY; j++) {
+					glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(startingX + i * tileWidth, startingY + j * tileHeight, 0.0f));
+					model = glm::scale(model, glm::vec3(tileWidth, tileHeight, 1.0f));
+					glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
+					glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+					glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+				}
+			}
+
+			glBindVertexArray(0);
+			glUseProgram(0);
+		}
+
+        virtual void handleEvents(SDL_Event* event) override {
+            // No event handling for the image component
+        }
+
+		virtual void updatePosition(float deltaX, float deltaY) override {
+			// First, call the base class method to update the button's position
+			startingX += deltaX;
+			startingY += deltaY;
+		}
+    };
+
 
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2050,18 +2138,57 @@ void main()
 		uiManager.currentWidget->components.push_back(labelComponent);
 	}
 
+	void TileBG(int x, int y, int width, int height, int tileWidth, int tileHeight, const std::string& texturePath) {
+		if (!uiManager.currentWidget) {
+			std::cerr << "No widget selected" << std::endl;
+			return;
+		}
+		// Create a new TiledBG
+		auto tiledBG = new TiledBG(x, y, width, height, tileWidth, tileHeight, texturePath);
+		// Adjust position relative to the current widget
+		tiledBG->x += static_cast<float>(uiManager.currentWidget->x);
+		tiledBG->y += static_cast<float>(uiManager.currentWidget->y);
+		tiledBG->width = width;
+		tiledBG->height = height;
+
+		// Add the TiledBG to the current widget's components for it to be drawn
+		uiManager.currentWidget->components.push_back(tiledBG);
+	}
 
     //Close widget call
     void closewidget(int ID) {
-        for (auto widget : uiManager.widgets) {
-            if (widget->ID == ID) {
+        for (auto it = uiManager.widgets.begin(); it != uiManager.widgets.end(); /* no increment here */) {
+            if ((*it)->ID == ID) {
+                auto widget = *it;
                 widget->isActive = false;
-                // Optionally, break here if IDs are unique
+                widget->isVisable = false;
 
+                // Check for errors
+                if (widget->texture) {
+                    glDeleteTextures(1, &widget->texture);
+                }
 
+                // Delete components
+                for (auto component : widget->components) {
+                    delete component;
+                }
+
+                // Delete the widget
+                delete widget;
+
+                // Remove the widget from the list
+                it = uiManager.widgets.erase(it); // Correctly update the iterator
+
+                // Break after deleting the widget to avoid invalid iterator access
+                break;
+            }
+            else {
+                ++it; // Only increment if not erasing
             }
         }
     }
+
+
     void endWidget() {
         uiManager.currentWidget = nullptr;
         uiManager.isCreatingWidget = false;
@@ -2086,6 +2213,6 @@ void main()
         }
     }
 
-    // Additional utility functions and widget operations can be defined here...
+
 
 } // namespace SV_UI

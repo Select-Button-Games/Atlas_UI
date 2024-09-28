@@ -22,28 +22,28 @@ namespace Atlas {
     ////////////SHADERS FOR ATLAS TEXT//////////////////////////////
 
     GLuint compileTextShader(const char* shaderSource, GLenum shaderType) {
-    GLuint shader = glCreateShader(shaderType);
-    glShaderSource(shader, 1, &shaderSource, NULL);
-    glCompileShader(shader);
-    
-    return shader;
-}
+        GLuint shader = glCreateShader(shaderType);
+        glShaderSource(shader, 1, &shaderSource, NULL);
+        glCompileShader(shader);
 
-GLuint createTextShaderProgram(const char* vertexShaderSource, const char* fragmentShaderSource) {
-    GLuint vertexShader = compileTextShader(vertexShaderSource, GL_VERTEX_SHADER);
-    GLuint fragmentShader = compileTextShader(fragmentShaderSource, GL_FRAGMENT_SHADER);
+        return shader;
+    }
 
-    GLuint shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-  
+    GLuint createTextShaderProgram(const char* vertexShaderSource, const char* fragmentShaderSource) {
+        GLuint vertexShader = compileTextShader(vertexShaderSource, GL_VERTEX_SHADER);
+        GLuint fragmentShader = compileTextShader(fragmentShaderSource, GL_FRAGMENT_SHADER);
 
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
+        GLuint shaderProgram = glCreateProgram();
+        glAttachShader(shaderProgram, vertexShader);
+        glAttachShader(shaderProgram, fragmentShader);
+        glLinkProgram(shaderProgram);
 
-    return shaderProgram;
-}
+
+        glDeleteShader(vertexShader);
+        glDeleteShader(fragmentShader);
+
+        return shaderProgram;
+    }
 
 
 
@@ -77,7 +77,7 @@ void main()
 }
 )";
 
-//Class for text rendering
+    //Class for text rendering
     class TextRenderer {
     public:
         TextRenderer(float fontSize);
@@ -126,10 +126,10 @@ void main()
         void SetupRenderData();
 
         static std::string globalFontPath; // Static member to store the global font path
-        
+
     };
 
-    std::string TextRenderer::globalFontPath = "C:/Windows/Fonts/arial.ttf";
+    std::string TextRenderer::globalFontPath = "UI/svf.ttf";
 
 
     TextRenderer::TextRenderer(float fontSize) {
@@ -154,8 +154,8 @@ void main()
     }
 
     void TextRenderer::SetGlobalFont(const std::string& fontPath) {
-		globalFontPath = fontPath;
-	}
+        globalFontPath = fontPath;
+    }
 
 
     TextRenderer::~TextRenderer() {
@@ -233,7 +233,7 @@ void main()
         glBindVertexArray(VAO);
 
         GLenum error = glGetError();
-       
+
 
         std::string::const_iterator c;
         for (c = text.begin(); c != text.end(); c++) {
@@ -261,7 +261,7 @@ void main()
             glDrawArrays(GL_TRIANGLES, 0, 6);
 
             error = glGetError();
-           
+
 
             x += (ch.Advance >> 6) * scale;
         }
@@ -269,7 +269,7 @@ void main()
         glBindTexture(GL_TEXTURE_2D, 0);
 
         error = glGetError();
-       
+
     }
 
 
@@ -278,4 +278,4 @@ void main()
 
 
 
-} 
+}
